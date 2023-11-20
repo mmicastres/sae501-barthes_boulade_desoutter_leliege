@@ -5,7 +5,7 @@ Boulade Louna <br>
 Desoutter Alexandre <br>
 Leliege Nino <br>
 
-Persqonnes voulant marcher de façon ludique, cherchant la motivation pour s'entretenir.
+Personnes voulant marcher de façon ludique, cherchant la motivation pour s'entretenir.
 
 **BUT :** <br>
 Bienvenue au coeur du danger dans la contré des **Hikers**, seule la loi du plus fort règne. <br>
