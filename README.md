@@ -9,7 +9,7 @@ Persqonnes voulant marcher de façon ludique, cherchant la motivation pour s'ent
 
 **BUT :** <br>
 Bienvenue au coeur du danger dans la contré des **Hikers**, seule la loi du plus fort règne. <br>
-L'objectif est simple lus l'utilisateur va marcher, plus le personnage joué va gagner en exp pour gagner des niveau et même évoluer. Lors de son aventure l'utilisateur peut tomber sur des coffres contenant expérience et autres personnages à collectionner. <br>
-Si l'utilisateur ce rapproche d'un autre joueur il y a un duel, si le duel est gagné, le personnage gagne de l'exp, si le joueur perd, le joueur perd de l'exp. <br>
-Au cours de périple l'utilasateur aura l'opportinité d'accomplir de nombreuses quêtes, lui permettant de gagner grand nombre de récompenses.
-
+L'objectif est simple plus l'utilisateur va marcher, plus l'utilisateur joué va gagner en exp pour gagner des niveau ai,si qu'un grade. <br>
+Si l'utilisateur ce rapproche d'un autre joueur il y a un duel (pierre, feuille, ciseaux), si le duel est gagné, l'utilisateur un personnage aléatoire. <br>
+L'utilisateur peut voir sa distance parcourus le jour même, ainsi que depuis le début du jeu. <br>
+L'utilisateur peut collectionner une multitude de personnages. <br>
