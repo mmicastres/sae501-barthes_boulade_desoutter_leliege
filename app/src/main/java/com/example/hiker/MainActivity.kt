@@ -2,6 +2,7 @@ package com.example.hiker
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
         task.addOnSuccessListener {
             if ( it != null) {
                 Toast.makeText(applicationContext, "${it.latitude} ${it.longitude}", Toast.LENGTH_SHORT).show()
+                Log.i("LATITUDE", it.latitude.toString())
             }
         }
     }
