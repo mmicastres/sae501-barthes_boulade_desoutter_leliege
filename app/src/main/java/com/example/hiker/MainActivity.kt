@@ -1,8 +1,10 @@
 package com.example.hiker
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,8 +22,20 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                var distance = CalculDistance()
-                Text(text = "Distance parcourue : $distance km")
+                Column() {
+                    var distance = CalculDistance()
+                    Log.d("Distance", "Distance parcourue : $distance km")
+
+                    var nvdistance = 5
+                    nvdistance += distance.toInt()
+                    Log.d("NouvelleDistance", "Nouvelle distance parcourue : $nvdistance km")
+
+
+
+                    Text(text = "Distance parcourue : $distance km")
+                    Text(text = "Nouvelle distance parcourue : $nvdistance km")
+                }
+
             }
             }
         }
