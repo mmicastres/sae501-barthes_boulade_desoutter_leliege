@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     var distance = CalculDistance()
                     Log.d("Distance", "Distance parcourue : $distance km")
 
-                    var nvdistance = 5
+                    var nvdistance = CalculDistance()
                     nvdistance += distance.toInt()
                     Log.d("NouvelleDistance", "Nouvelle distance parcourue : $nvdistance km")
 

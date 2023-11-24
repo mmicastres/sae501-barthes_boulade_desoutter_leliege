@@ -21,7 +21,7 @@ fun CalculDistance(): Double {
 
     val lat1 = 43.6157184
     val lon1 = 2.1976388
-    val lat2 = 43.616263
+    val lat2 = 53.616263
     val lon2 = 2.209621
 
     return haversine(lat1, lon1, lat2, lon2)
