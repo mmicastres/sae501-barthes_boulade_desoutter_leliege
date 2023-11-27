@@ -25,6 +25,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lon by mutableStateOf<Double?>(null)
     private var lat by mutableStateOf<Double?>(null)
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val lastLocation = locationResult.lastLocation
+            lon = lastLocation?.longitude
+            lat = lastLocation?.latitude
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,18 +82,11 @@ class MainActivity : ComponentActivity() {
 
     private fun startLocationUpdates() {
         lifecycleScope.launch {
-            val locationRequest = LocationRequest.create().apply {
-                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                interval = 1000
-            }
-
-            val locationCallback = object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    val lastLocation = locationResult.lastLocation
-                    lon = lastLocation?.longitude
-                    lat = lastLocation?.latitude
-                }
-            }
+            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).apply {
+                setMinUpdateDistanceMeters(5F)
+                setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+                setWaitForAccurateLocation(true)
+            }.build()
 
             try {
                 fusedLocationProviderClient.requestLocationUpdates(
@@ -101,8 +101,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun stopLocationUpdates() {
-        lon = null
-        lat = null
+        lifecycleScope.launch {
+            try {
+                fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+            } catch (e: SecurityException) {
+                // Gérer l'exception de sécurité ici
+            }
+            lon = null
+            lat = null
+        }
     }
 
     private fun checkLocationPermission(): Boolean {
