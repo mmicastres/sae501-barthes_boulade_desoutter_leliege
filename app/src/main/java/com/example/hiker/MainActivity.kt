@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hiker.ui.theme.HikerTheme
 
@@ -64,10 +63,11 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun vibrer() {
-        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (vibrator.hasVibrator()) {
+        val vibration = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibration.hasVibrator()) {
             val vibrationEffect = VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)
-            vibrator.vibrate(vibrationEffect)
+            val pattern = longArrayOf(0, 150, 100, 150)
+            vibration.vibrate(pattern, -1)
         } else {
             Log.v("vibrer", "mon telephone ne peut pas vibrer");
         }
