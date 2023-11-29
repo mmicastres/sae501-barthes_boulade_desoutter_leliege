@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                             waterNotificationService.showBasicNotification()
                         }
                     ) {
-                        Text(text = "Afficher une notification de base")
+                        Text(text = "Notification")
                     }
                 }
 

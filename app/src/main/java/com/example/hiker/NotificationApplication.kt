@@ -13,8 +13,8 @@ class NotificationApplication : Application() {
         super.onCreate()
 
         val notificationChannel = NotificationChannel(
-            "water_reminder",
-            "Water reminder channel",
+            "notification",
+            "Hiker",
             NotificationManager.IMPORTANCE_HIGH
         )
 
