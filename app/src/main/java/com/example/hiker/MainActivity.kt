@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 
-
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,20 +49,27 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
+
+private fun vibrer(context: Context) {
+    val vibration = getSystemService(context, Vibrator::class.java)
+    if (vibration?.hasVibrator() == true) {
+        val pattern = longArrayOf(0, 150, 100, 150)
+        vibration.vibrate(pattern, -1)
+    } else {
+        Log.v("vibrer", "mon telephone ne peut pas vibrer")
+    }
+}
+
 @Composable
 fun Niveaux() {
     // Utilisez remember pour sauvegarder l'état même lorsque la composition est réexécutée
     val state = remember { mutableStateOf(ClassKil()) }
-
-    // Mise à jour de l'état lorsque l'utilisateur parcourt 10 kilomètres
-//    nbDeKilometreParcourus(state)
-
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize(),
-
-        ) {
+    ) {
         Text(text = "Niveau actuel: ${state.value.niveau}")
         Text(text = "Kilomètres parcourus: ${state.value.kilometres}")
         Button(
@@ -71,32 +77,19 @@ fun Niveaux() {
                 state.value = state.value.copy(kilometres = state.value.kilometres + 1)
                 if (state.value.kilometres % 5 == 0) {
                     state.value = state.value.copy(niveau = state.value.niveau + 1)
+                    vibrer(context)
                 }
             },
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("Parcourir 1 kilomètre")
         }
-
-
     }
 }
+
 
 data class ClassKil(
     val niveau: Int = 1,
     val kilometres: Int = 0
 )
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-private fun vibrer(context: Context) {
-    val vibration = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    if (vibration.hasVibrator()) {
-        val pattern = longArrayOf(0, 150, 100, 150)
-        vibration.vibrate(pattern, -1)
-    } else {
-        Log.v("vibrer", "mon telephone ne peut pas vibrer");
-    }
 
-}
-
-*/
