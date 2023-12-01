@@ -42,6 +42,7 @@ fun Niveaux() {
 
         ) {
         Text(text = "Niveau actuel: ${state.value.niveau}")
+        Text(text = "Grade: ${getGrade(state.value.niveau)}")
         Text(text = "Kilomètres parcourus: ${state.value.kilometres}")
         Button(
             onClick = {
@@ -63,3 +64,16 @@ data class ClassKil(
     val niveau: Int = 1,
     val kilometres: Int = 0
 )
+
+fun getGrade(niveau: Int): String {
+    return when (niveau) {
+        in 1..4 -> "Apprenti randonneur"
+        in 5..9 -> "Randonneur occasionnel"
+        in 10..14 -> "Randonneur"
+        in 15..19 -> "Randonneur expérimenté"
+        in 20..24 -> "Maître randonneur"
+        in 25..29 -> "Grand maître randonneur"
+        in 30..34 -> "Randonneur suprême"
+        else -> "Éminent randonneur de l'ordre des Hikers"
+    }
+}
