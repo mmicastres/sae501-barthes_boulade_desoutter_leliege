@@ -75,6 +75,43 @@ class MainActivity : ComponentActivity() {
             Text(text = "$title:")
             Text(text = "Latitude: ${lat ?: 0.0}, Longitude: ${lon ?: 0.0}")
             Text(text = "Distance parcourue: $totalDistance mètres")
+            Niveaux(totalDistance = totalDistance)
+        }
+    }
+
+    @Composable
+    fun Niveaux(totalDistance: Float) {
+        // Utilisez remember pour sauvegarder l'état même lorsque la composition est réexécutée
+        remember { mutableStateOf(ClassKil()) }
+
+        // Mise à jour de l'état lorsque l'utilisateur parcourt 10 kilomètres
+        Column {
+            Text(text = "Niveau actuel: ${calculateLevel(totalDistance)}")
+            Text(text = "Grade: ${getGrade(calculateLevel(totalDistance))}")
+        }
+    }
+
+    private fun calculateLevel(totalDistance: Float): Int {
+        // Changer la logique selon les besoins
+        return (totalDistance / 2000).toInt() + 1
+    }
+
+    data class ClassKil(
+        val niveau: Int = 1,
+        val kilometres: Int = 0,
+        val grade: String = "Apprenti randonneur"
+    )
+
+    private fun getGrade(niveau: Int): String {
+        return when (niveau) {
+            1 -> "Apprenti randonneur"
+            2 -> "Randonneur occasionnel"
+            3 -> "Randonneur"
+            4 -> "Randonneur expérimenté"
+            5 -> "Maître randonneur"
+            6 -> "Grand maître randonneur"
+            7 -> "Randonneur suprême"
+            else -> "Éminent randonneur de l'ordre des Hikers"
         }
     }
 
