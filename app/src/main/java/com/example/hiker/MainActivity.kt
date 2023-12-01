@@ -104,17 +104,16 @@ class MainActivity : ComponentActivity() {
 
     private fun getGrade(niveau: Int): String {
         return when (niveau) {
-            1 -> "Apprenti randonneur"
-            2 -> "Randonneur occasionnel"
-            3 -> "Randonneur"
-            4 -> "Randonneur expérimenté"
-            5 -> "Maître randonneur"
-            6 -> "Grand maître randonneur"
-            7 -> "Randonneur suprême"
+            in 1..4 -> "Apprenti randonneur"
+            in 5..9 -> "Randonneur occasionnel"
+            in 10..14 -> "Randonneur"
+            in 15..19 -> "Randonneur expérimenté"
+            in 20..24 -> "Maître randonneur"
+            in 25..29 -> "Grand maître randonneur"
+            in 30..34 -> "Randonneur suprême"
             else -> "Éminent randonneur de l'ordre des Hikers"
         }
     }
-
 
     private fun toggleLocationUpdates() {
         lifecycleScope.launch {
