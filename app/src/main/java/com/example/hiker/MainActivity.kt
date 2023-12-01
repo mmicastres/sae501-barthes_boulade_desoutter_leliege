@@ -1,5 +1,4 @@
 package com.example.hiker
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -54,14 +53,14 @@ data class ClassKil(
 )
 
 fun getGrade(niveau: Int): String {
-    return when {
-        niveau in 1..4 -> "Apprenti randonneur"
-        niveau in 5..9 -> "Randonneur occasionnel"
-        niveau in 10..14 -> "Randonneur"
-        niveau in 15..19 -> "Randonneur expérimenté"
-        niveau in 20..24 -> "Maître randonneur"
-        niveau in 25..29 -> "Grand maître randonneur"
-        niveau in 30..34 -> "Randonneur suprême"
+    return when (niveau) {
+        in 1..4 -> "Apprenti randonneur"
+        in 5..9 -> "Randonneur occasionnel"
+        in 10..14 -> "Randonneur"
+        in 15..19 -> "Randonneur expérimenté"
+        in 20..24 -> "Maître randonneur"
+        in 25..29 -> "Grand maître randonneur"
+        in 30..34 -> "Randonneur suprême"
         else -> "Éminent randonneur de l'ordre des Hikers"
     }
 }
