@@ -19,17 +19,30 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.*
 import kotlinx.coroutines.launch
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var totalDistance: Float = 0f
     private var lon by mutableStateOf<Double?>(null)
     private var lat by mutableStateOf<Double?>(null)
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation = locationResult.lastLocation
-            lon = lastLocation?.longitude
-            lat = lastLocation?.latitude
+            val newLat = lastLocation?.latitude
+            val newLon = lastLocation?.longitude
+
+            if (lat != null && lon != null && newLat != null && newLon != null) {
+                val distance = calculateDistance(lat!!, lon!!, newLat, newLon)
+                totalDistance += distance
+            }
+
+            lat = newLat
+            lon = newLon
         }
     }
 
@@ -61,8 +74,10 @@ class MainActivity : ComponentActivity() {
         Column {
             Text(text = "$title:")
             Text(text = "Latitude: ${lat ?: 0.0}, Longitude: ${lon ?: 0.0}")
+            Text(text = "Distance parcourue: $totalDistance mètres")
         }
     }
+
 
     private fun toggleLocationUpdates() {
         lifecycleScope.launch {
@@ -126,6 +141,27 @@ class MainActivity : ComponentActivity() {
             PERMISSION_REQUEST_CODE
         )
     }
+
+    private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        val earthRadius = 6371000.0 // Rayon de la Terre en mètres
+
+        // Convertir les latitudes et longitudes en radians
+        val lat1Rad = Math.toRadians(lat1)
+        val lon1Rad = Math.toRadians(lon1)
+        val lat2Rad = Math.toRadians(lat2)
+        val lon2Rad = Math.toRadians(lon2)
+
+        // Calculer la distance entre les deux points en utilisant la formule de la loi des cosinus
+        val dLon = lon2Rad - lon1Rad
+        val dLat = lat2Rad - lat1Rad
+        val a = sin(dLat / 2) * sin(dLat / 2) +
+                cos(lat1Rad) * cos(lat2Rad) *
+                sin(dLon / 2) * sin(dLon / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return (earthRadius * c).toFloat()
+    }
+
 
     companion object {
         const val PERMISSION_REQUEST_CODE = 101
