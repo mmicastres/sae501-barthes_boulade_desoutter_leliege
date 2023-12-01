@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Déplacez la création de waterNotificationService en dehors de la lambda setContent
-        val waterNotificationService = WaterNotificationService(this)
+        val notificationService = NotificationService(this)
 
         setContent {
             HikerTheme{
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 Column {
                     Button(
                         onClick = {
-                            waterNotificationService.showBasicNotification()
+                            notificationService.showBasicNotification()
                         }
                     ) {
                         Text(text = "Notification")
