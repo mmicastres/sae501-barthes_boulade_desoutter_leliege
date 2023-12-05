@@ -17,7 +17,7 @@ class NotificationService(
 
     fun showBasicNotification() {
 
-        val grandeIcone = BitmapFactory.decodeResource(context.resources, R.drawable.hiker_logo)+
+        val grandeIcone = BitmapFactory.decodeResource(context.resources, R.drawable.hiker_logo)
         val notification = NotificationCompat.Builder(context, "notification")
             .setSmallIcon(R.drawable.hiker_logo)
             .setContentTitle("Vous venez de gagner un niveau !")
