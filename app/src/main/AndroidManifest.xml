@@ -23,6 +23,7 @@
             android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Hiker">
+            <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBazzQkCn_v_rxGjDda_zxqlTit9m2_xHo"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
