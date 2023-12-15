@@ -1,5 +1,6 @@
     package com.example.hiker.ui.components
 
+    import android.util.Log
     import androidx.compose.foundation.layout.Column
     import androidx.compose.foundation.layout.Spacer
     import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@
 
         Column {
             Text(text = "Current Location:")
+            Log.d("LocationService", "New lat: $lat, New lon: $lon")
             Text(text = "Latitude: ${lat ?: 0.0}, Longitude: ${lon ?: 0.0}")
             Text(text = "Distance parcourue: $totalDistance mètres")
             Spacer(modifier = Modifier.height(16.dp))

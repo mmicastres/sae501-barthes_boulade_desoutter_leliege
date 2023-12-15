@@ -1,11 +1,13 @@
 package com.example.hiker.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,21 @@ class MainActivity : ComponentActivity() {
         locationService = LocationService(this, lifecycleScope)
 
         setContent {
+            var isLocationAvailable by remember { mutableStateOf(false) }
+
+            // Souscrire aux mises à jour de localisation
+            DisposableEffect(locationService) {
+                val observer = object : LocationService.LocationUpdateObserver {
+                    override fun onLocationUpdated() {
+                        isLocationAvailable = locationService.isLocationAvailable()
+                    }
+                }
+                locationService.addObserver(observer)
+                onDispose {
+                    locationService.removeObserver(observer)
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -31,11 +48,11 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(onClick = { locationService.toggleLocationUpdates() }) {
-                    Text(text = if (locationService.isLocationAvailable()) "Stop Location Updates" else "Start Location Updates")
+                    Text(text = if (isLocationAvailable) "Stop Location Updates" else "Start Location Updates")
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (locationService.isLocationAvailable()) {
+                if (isLocationAvailable) {
                     DisplayLocation(locationService, userLevelManager)
                 }
             }
