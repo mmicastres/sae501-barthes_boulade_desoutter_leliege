@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -27,6 +28,16 @@ import com.example.hiker.R
 fun HikersPage() {
     var selectedImage by remember { mutableStateOf<Int?>(null) }
 
+    // Associer chaque image miniature à son image détaillée
+    val imageMap = mapOf(
+        R.drawable.louis_minia to R.drawable.louis,
+        R.drawable.louna_minia to R.drawable.louna,
+        R.drawable.alexandre_minia to R.drawable.alexandre,
+        R.drawable.nino_minia to R.drawable.nino,
+        R.drawable.simpson_minia to R.drawable.simpson,
+        R.drawable.merlin_minia to R.drawable.merlin
+    )
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Collection",
@@ -36,35 +47,45 @@ fun HikersPage() {
                 .align(Alignment.CenterHorizontally)
         )
 
-        if (selectedImage == null) {
-            ImageGrid(onImageClick = { image -> selectedImage = image })
-        } else {
+        if (selectedImage != null) {
+            // Afficher l'image détaillée
             ImageDisplay(image = selectedImage!!, onDismiss = { selectedImage = null })
+        } else {
+            // Afficher la grille d'images miniatures
+            ImageGrid(onImageClick = { imageMinia ->
+                // Lorsqu'une image miniature est cliquée, définissez l'image détaillée à afficher
+                selectedImage = imageMap[imageMinia]
+            })
         }
     }
 }
 
+
+
 @Composable
 fun ImageGrid(onImageClick: (Int) -> Unit) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(2), // Gardez 2 colonnes comme avant
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val images = listOf(
-            R.drawable.louis,
-            R.drawable.alexandre,
-            R.drawable.louna,
-            R.drawable.nino,
-            R.drawable.simpson,
-            R.drawable.merlin
+            R.drawable.louis_minia,
+            R.drawable.louna_minia,
+            R.drawable.alexandre_minia,
+            R.drawable.nino_minia,
+            R.drawable.simpson_minia,
+            R.drawable.merlin_minia
         )
         items(images) { image ->
             Image(
                 painter = painterResource(id = image),
                 contentDescription = null,
-                modifier = Modifier.clickable { onImageClick(image) }
+                // Ajoutez le modificateur size pour ajuster la taille de l'image
+                modifier = Modifier
+                    .size(150.dp) // Supposons que la taille originale est 75.dp, la doubler revient à mettre 150.dp
+                    .clickable { onImageClick(image) }
             )
         }
     }
