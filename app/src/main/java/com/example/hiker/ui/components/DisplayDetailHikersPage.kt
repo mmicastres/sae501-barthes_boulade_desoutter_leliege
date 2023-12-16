@@ -2,6 +2,7 @@ package com.example.hiker.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,7 @@ fun ImageDisplay(image: Int, onDismiss: () -> Unit) {
             contentDescription = "Selected image",
             modifier = Modifier
                 .fillMaxWidth()
+                .aspectRatio(1f, matchHeightConstraintsFirst = true)
                 .align(Alignment.Center)
         )
 
