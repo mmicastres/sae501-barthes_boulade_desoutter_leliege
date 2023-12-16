@@ -9,10 +9,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.hiker.R
+import com.example.hiker.ui.theme.Jaune
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    BottomNavigation(backgroundColor = Color.White, contentColor = Color.Black) {
+    BottomNavigation(backgroundColor = Jaune, contentColor = Color.Black) {
         BottomNavigationItem(
             icon = { Icon(painter = painterResource(id = R.drawable.icon_cartes), contentDescription = null) },
             label = { Text("Hikers") },
