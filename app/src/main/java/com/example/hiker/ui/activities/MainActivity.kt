@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                     navController = navController,
                     startDestination = "profile",
-                    modifier = Modifier.padding(innerPadding) // Utilisez innerPadding ici
+                    modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage() }
                     composable("map") { MapPage() }
