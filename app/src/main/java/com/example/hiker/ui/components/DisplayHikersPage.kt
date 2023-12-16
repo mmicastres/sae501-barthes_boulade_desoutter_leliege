@@ -1,5 +1,6 @@
 package com.example.hiker.ui.components
 
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,19 +24,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.hiker.R
+import com.example.hiker.ui.theme.Noir
+
+data class Card(val miniaturaImageResource: Int, val detailedImageResource: Int, val isUnlocked: Boolean)
 
 @Composable
 fun HikersPage() {
     var selectedImage by remember { mutableStateOf<Int?>(null) }
 
-    // Associer chaque image miniature à son image détaillée
-    val imageMap = mapOf(
-        R.drawable.louis_minia to R.drawable.louis,
-        R.drawable.louna_minia to R.drawable.louna,
-        R.drawable.alexandre_minia to R.drawable.alexandre,
-        R.drawable.nino_minia to R.drawable.nino,
-        R.drawable.simpson_minia to R.drawable.simpson,
-        R.drawable.merlin_minia to R.drawable.merlin
+    // Liste initiale des cartes - À terme, cette liste viendra du backend
+    val cards = listOf(
+        Card(R.drawable.louis_minia, R.drawable.louis, true),
+        Card(R.drawable.louna_minia, R.drawable.louna, false),
+        Card(R.drawable.alexandre_minia, R.drawable.alexandre, false),
+        Card(R.drawable.nino_minia, R.drawable.nino, false),
+        Card(R.drawable.simpson_minia, R.drawable.simpson, false),
+        Card(R.drawable.merlin_minia, R.drawable.merlin, false)
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -48,44 +52,33 @@ fun HikersPage() {
         )
 
         if (selectedImage != null) {
-            // Afficher l'image détaillée
             ImageDisplay(image = selectedImage!!, onDismiss = { selectedImage = null })
         } else {
-            // Afficher la grille d'images miniatures
-            ImageGrid(onImageClick = { imageMinia ->
-                // Lorsqu'une image miniature est cliquée, définissez l'image détaillée à afficher
-                selectedImage = imageMap[imageMinia]
+            ImageGrid(cards, onImageClick = { imageMinia ->
+                // Trouver l'image détaillée correspondant à l'image miniature cliquée
+                val detailedImage = cards.firstOrNull { it.miniaturaImageResource == imageMinia }?.detailedImageResource
+                detailedImage?.let { selectedImage = it }
             })
         }
     }
 }
 
-
-
 @Composable
-fun ImageGrid(onImageClick: (Int) -> Unit) {
+fun ImageGrid(cards: List<Card>, onImageClick: (Int) -> Unit) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2), // Gardez 2 colonnes comme avant
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val images = listOf(
-            R.drawable.louis_minia,
-            R.drawable.louna_minia,
-            R.drawable.alexandre_minia,
-            R.drawable.nino_minia,
-            R.drawable.simpson_minia,
-            R.drawable.merlin_minia
-        )
-        items(images) { image ->
+        items(cards) { card ->
             Image(
-                painter = painterResource(id = image),
+                painter = painterResource(id = card.miniaturaImageResource),
                 contentDescription = null,
-                // Ajoutez le modificateur size pour ajuster la taille de l'image
                 modifier = Modifier
-                    .size(150.dp) // Supposons que la taille originale est 75.dp, la doubler revient à mettre 150.dp
-                    .clickable { onImageClick(image) }
+                    .size(150.dp)
+                    .clickable { if (card.isUnlocked) onImageClick(card.miniaturaImageResource) },
+                colorFilter = if (!card.isUnlocked) ColorFilter.tint(Noir) else null // Griser la carte si elle n'est pas débloquée
             )
         }
     }
