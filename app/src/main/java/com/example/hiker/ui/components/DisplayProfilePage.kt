@@ -1,33 +1,36 @@
 package com.example.hiker.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.example.hiker.services.LocationService
-import com.example.hiker.managers.UserLevelManager
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.hiker.R
+import com.example.hiker.managers.UserLevelManager
+import com.example.hiker.services.LocationService
+import com.example.hiker.ui.theme.Maron
+import java.util.Locale
 
 
 @Composable
 fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager) {
+    val backgroundImage: Painter = painterResource(id = R.drawable.backgroud_image)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,26 +41,36 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "Nom d'utilisateur: User",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            )
             DisplayNiveaux(locationService.totalDistance, userLevelManager)
             Spacer(modifier = Modifier.height(16.dp))
-            GridStatSection(locationService)
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            UniversalButton(
-                onClickAction = { locationService.toggleLocationUpdates() },
-                buttonText = if (locationService.isLocationAvailable()) "Stop Location Updates" else "Start Location Updates"
-            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .background(Color.White.copy(alpha = 0.5f))
+            ) {
+                Image(
+                    painter = backgroundImage,
+                    contentDescription = "Background Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(0.7f)
+                )
+                GridStatSection(locationService)
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                UniversalButton(
+                    onClickAction = { locationService.toggleLocationUpdates() },
+                    buttonText = if (locationService.isLocationAvailable()) "Stop Location Updates" else "Start Location Updates"
+                )
+            }
         }
     }
 }
@@ -69,7 +82,7 @@ fun GridStatSection(locationService: LocationService) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             val formattedLat = "%.2f".format(locationService.lat ?: 0.0)
             val formattedLon = "%.2f".format(locationService.lon ?: 0.0)
-            StatBubble(title = "Position Actuelle", content = "$formattedLat, $formattedLon")
+            StatBubble(title = "Position Actuelle", content = "$formattedLat | $formattedLon")
             StatBubble(
                 title = "Distance Totale",
                 content = "${locationService.totalDistance} mètres"
@@ -87,20 +100,32 @@ fun GridStatSection(locationService: LocationService) {
 fun StatBubble(title: String, content: String) {
     Box(
         modifier = Modifier
-            .size(width = 150.dp, height = 150.dp)
-            .background(color = Color.LightGray, shape = RoundedCornerShape(75.dp)),
-        contentAlignment = Alignment.Center  // Aligner le contenu au centre
+            .size(150.dp)
+            .clip(CircleShape)
+            .background(Maron),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = title,
-                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(bottom = 4.dp)  // Ajuster la marge interne
+                text = title.uppercase(Locale.ROOT),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                ),
+                modifier = Modifier.padding(bottom = 4.dp)
             )
-            Text(text = content)
+            Text(
+                text = content,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Light,
+                    color = Color.White
+                )
+            )
         }
     }
 }
@@ -110,9 +135,46 @@ fun DisplayNiveaux(totalDistance: Float, userLevelManager: UserLevelManager) {
     val level = userLevelManager.calculateLevel(totalDistance)
     val grade = userLevelManager.getGrade(level)
 
-    Column {
-        Text(text = "Niveau actuel: $level")
-        Text(text = "Grade: $grade")
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "Louna la rando du 81",
+            style = TextStyle(
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Normal,
+                fontSize = 24.sp,
+                color = Color.Black
+            ),
+            textAlign = TextAlign.Left,
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Nv. $level",
+                style = TextStyle(
+                    fontFamily = FontFamily.Serif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.Black
+                ),
+            )
+            Text(
+                text = grade,
+                style = TextStyle(
+                    fontFamily = FontFamily.Serif,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.Black
+                ),
+                modifier = Modifier.padding(end = 16.dp)
+            )
+        }
     }
 }
 
