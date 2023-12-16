@@ -29,7 +29,7 @@
 
 
     @Composable
-    fun StatsPage(locationService: LocationService, userLevelManager: UserLevelManager) {
+    fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
