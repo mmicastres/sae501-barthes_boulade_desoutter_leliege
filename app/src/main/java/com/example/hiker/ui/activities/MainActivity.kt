@@ -13,6 +13,16 @@ import androidx.lifecycle.lifecycleScope
 import com.example.hiker.services.LocationService
 import com.example.hiker.ui.components.DisplayLocation
 import com.example.hiker.managers.UserLevelManager
+import com.example.hiker.ui.components.Map
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationService: LocationService
@@ -20,7 +30,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         locationService = LocationService(this, lifecycleScope)
+        val ctx = applicationContext
+        Configuration.getInstance().load(ctx, getSharedPreferences("osmdroid", 0))
+
 
         setContent {
             Column(
@@ -36,9 +50,16 @@ class MainActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (locationService.isLocationAvailable()) {
-                    DisplayLocation(locationService, userLevelManager)
+                    // DisplayLocation(locationService, userLevelManager)
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        Map(locationService.lat!!, locationService.lon!!)
+                    }
                 }
+                }
+
             }
         }
-    }
 }
