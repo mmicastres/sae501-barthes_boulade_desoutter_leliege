@@ -14,6 +14,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.hiker.services.LocationService
+import org.osmdroid.util.GeoPoint
 
 
 @Composable
@@ -30,39 +31,54 @@ fun MapPage(locationService: LocationService) {
     }
 
     if (locationService.isLocationAvailable()) {
-        val context = LocalContext.current
 
-        // Create the map view
-        val mapView = MapView(context)
-
-        // Enable user location
-        val myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
-        myLocationOverlay.enableMyLocation()
-
-        // Customize other map settings as needed
-        mapView.setMultiTouchControls(true)
-
-        // Manually set the user's location
-        myLocationOverlay.enableFollowLocation()
-
-        // Zoom to the user's location
-        mapView.controller.setZoom(21.0) // Adjust the zoom level as needed
-        mapView.controller.animateTo(locationService.lat!!.toInt(), locationService.lon!!.toInt())
-
-        // Add the overlay to the map
-        mapView.overlays.add(myLocationOverlay)
+        var currentCenter: GeoPoint? = null
 
         // Compose UI with the MapView
         AndroidView(
-            factory = { mapView },
-            update = { /* Optional: Handle updates or customization */ },
+            factory = { context ->
+                // Create the map view
+                val mapView = MapView(context)
+
+                // Enable user location
+                val myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
+                myLocationOverlay.enableMyLocation()
+
+                // Manually set the user's location
+                myLocationOverlay.enableFollowLocation()
+
+                // Disable map scrolling
+                //mapView.isScrollable = false
+
+                // Customize other map settings as needed
+                //mapView.setMultiTouchControls(true)
+
+
+                // Zoom to the user's location
+                mapView.controller.setZoom(21.0) // Adjust the zoom level as needed
+
+                // Limiter le scroll
+                mapView.setScrollableAreaLimitLatitude(locationService.lat!!, locationService.lat!!, 10)
+                mapView.setScrollableAreaLimitLongitude(locationService.lon!!, locationService.lon!!, 10)
+
+                // Add the overlay to the map
+                mapView.overlays.add(myLocationOverlay)
+
+                mapView
+            },
+            update = { mapView ->
+                // Mettre à jour le centre de la carte si les coordonnées changent
+                val newCenter = GeoPoint(locationService.lat!!, locationService.lon!!)
+                if (currentCenter != newCenter) {
+
+                    mapView.resetScrollableAreaLimitLatitude()
+                    mapView.resetScrollableAreaLimitLongitude()
+                    // Faire défiler (scroll) vers la nouvelle position
+                    mapView.controller.animateTo(newCenter)
+                    currentCenter = newCenter
+                }
+            },
             modifier = Modifier.fillMaxSize()
         )
     }
-
-
-    /*
-
-
-     */
 }
