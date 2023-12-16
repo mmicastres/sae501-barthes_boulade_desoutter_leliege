@@ -24,6 +24,8 @@ import com.example.hiker.ui.components.ProfilePage
 import com.example.hiker.R
 import com.example.hiker.managers.UserLevelManager
 import com.example.hiker.services.LocationService
+import org.osmdroid.config.Configuration
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationService: LocationService
@@ -32,6 +34,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationService = LocationService(this, lifecycleScope)
+        val ctx = applicationContext
+        Configuration.getInstance().load(ctx, getSharedPreferences("osmdroid", 0))
 
         setContent {
             val navController = rememberNavController()
@@ -45,7 +49,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage() }
-                    composable("map") { MapPage() }
+                    composable("map") { MapPage(locationService) }
                     composable("profile") { ProfilePage(locationService, userLevelManager) }
                 }
             }
