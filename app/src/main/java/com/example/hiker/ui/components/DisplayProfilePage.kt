@@ -3,8 +3,13 @@ package com.example.hiker.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,57 +30,49 @@ import com.example.hiker.R
 import com.example.hiker.managers.UserLevelManager
 import com.example.hiker.services.LocationService
 import com.example.hiker.ui.theme.Maron
+import com.example.hiker.ui.theme.Jaune
 import java.util.Locale
 
 
 @Composable
 fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager) {
     val backgroundImage: Painter = painterResource(id = R.drawable.backgroud_image)
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+            .padding(20.dp, 16.dp, 20.dp, 0.dp)
+            .verticalScroll(scrollState)
     ) {
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
-        ) {
-            DisplayNiveaux(locationService.totalDistance, userLevelManager)
-            Spacer(modifier = Modifier.height(16.dp))
+        DisplayNiveaux(locationService.totalDistance, userLevelManager)
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Image(
+                painter = backgroundImage,
+                contentDescription = "Image de fond",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .background(Color.White.copy(alpha = 0.5f))
+                    .fillMaxSize()
+                    .alpha(0.7f)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Image(
-                    painter = backgroundImage,
-                    contentDescription = "Background Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.7f)
-                )
                 GridStatSection(locationService)
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                UniversalButton(
-                    onClickAction = { locationService.toggleLocationUpdates() },
-                    buttonText = if (locationService.isLocationAvailable()) "Stop Location Updates" else "Start Location Updates"
-                )
+                Spacer(modifier = Modifier.height(24.dp)) // Espace supplémentaire pour le défilement
+                Parametres()
+                Boutons(locationService)
             }
         }
     }
 }
-
-
 @Composable
 fun GridStatSection(locationService: LocationService) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -179,8 +176,77 @@ fun DisplayNiveaux(totalDistance: Float, userLevelManager: UserLevelManager) {
 }
 
 @Composable
-fun UniversalButton(onClickAction: () -> Unit, buttonText: String) {
-    Button(onClick = onClickAction) {
+fun Parametres() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Paramètres", fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Musique")
+                Switch(
+                    checked = true,
+                    onCheckedChange = { /* Gérer le changement */ },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Jaune,
+                        checkedTrackColor = Jaune.copy(alpha = 0.5f)
+                    )
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Son")
+                Switch(
+                    checked = true,
+                    onCheckedChange = { /* Gérer le changement */ },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Jaune,
+                        checkedTrackColor = Jaune.copy(alpha = 0.5f)
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "Langue : Français")
+        Divider(color = Color.Black, thickness = 1.dp)
+    }
+}
+@Composable
+fun Boutons(locationService: LocationService) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { /* Gérer l'aide */ }) {
+            Text(text = "Aide")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { /* Gérer la déconnexion */ },
+        ) {
+            Text(text = "Se déconnecter", color = Color.White)
+        }
+        UniversalButton(
+            onClickAction = { locationService.toggleLocationUpdates() },
+            buttonText = if (locationService.isLocationAvailable()) "Stop Location Updates" else "Start Location Updates"
+        )
+    }
+}
+
+@Composable
+fun UniversalButton(onClickAction: () -> Unit, buttonText: String, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onClickAction,
+        modifier = modifier
+    ) {
         Text(text = buttonText)
     }
 }
