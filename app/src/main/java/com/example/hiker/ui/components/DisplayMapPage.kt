@@ -37,31 +37,24 @@ fun MapPage(locationService: LocationService) {
         // Compose UI with the MapView
         AndroidView(
             factory = { context ->
-                // Create the map view
+                // Creation de la map
                 val mapView = MapView(context)
 
-                // Enable user location
+                // Autoriser la position de l'utilisateur
                 val myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), mapView)
                 myLocationOverlay.enableMyLocation()
 
-                // Manually set the user's location
+                // Suivre la position de l'utilisateur
                 myLocationOverlay.enableFollowLocation()
 
-                // Disable map scrolling
-                //mapView.isScrollable = false
-
-                // Customize other map settings as needed
+                // Autoriser le pincement ecran
                 //mapView.setMultiTouchControls(true)
 
 
-                // Zoom to the user's location
-                mapView.controller.setZoom(21.0) // Adjust the zoom level as needed
+                // Zoomer sur l'utilisateur
+                mapView.controller.setZoom(21.0)
 
-                // Limiter le scroll
-                mapView.setScrollableAreaLimitLatitude(locationService.lat!!, locationService.lat!!, 10)
-                mapView.setScrollableAreaLimitLongitude(locationService.lon!!, locationService.lon!!, 10)
-
-                // Add the overlay to the map
+                // Ajouter icone utilisateur à la map
                 mapView.overlays.add(myLocationOverlay)
 
                 mapView
@@ -71,8 +64,12 @@ fun MapPage(locationService: LocationService) {
                 val newCenter = GeoPoint(locationService.lat!!, locationService.lon!!)
                 if (currentCenter != newCenter) {
 
+                    // Définir la zone de scroll
                     mapView.resetScrollableAreaLimitLatitude()
                     mapView.resetScrollableAreaLimitLongitude()
+                    mapView.setScrollableAreaLimitLatitude(locationService.lat!!, locationService.lat!!, 10)
+                    mapView.setScrollableAreaLimitLongitude(locationService.lon!!, locationService.lon!!, 10)
+
                     // Faire défiler (scroll) vers la nouvelle position
                     mapView.controller.animateTo(newCenter)
                     currentCenter = newCenter
