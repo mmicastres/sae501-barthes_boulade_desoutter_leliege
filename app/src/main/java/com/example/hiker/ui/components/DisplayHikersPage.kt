@@ -1,5 +1,6 @@
 package com.example.hiker.ui.components
 
+import HikersViewModel
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -23,24 +24,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.hiker.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 import com.example.hiker.ui.theme.Noir
 
 data class Card(val miniaturaImageResource: Int, val detailedImageResource: Int, val isUnlocked: Boolean)
 
 @Composable
-fun HikersPage() {
+fun HikersPage(hikersViewModel: HikersViewModel = viewModel()) {
     var selectedImage by remember { mutableStateOf<Int?>(null) }
 
-    // Liste initiale des cartes - À terme, cette liste viendra du backend
-    val cards = listOf(
-        Card(R.drawable.louis_minia, R.drawable.louis, true),
-        Card(R.drawable.louna_minia, R.drawable.louna, false),
-        Card(R.drawable.alexandre_minia, R.drawable.alexandre, false),
-        Card(R.drawable.nino_minia, R.drawable.nino, false),
-        Card(R.drawable.simpson_minia, R.drawable.simpson, false),
-        Card(R.drawable.merlin_minia, R.drawable.merlin, false)
-    )
+    // Observez les données des cartes comme un état
+    val cards = hikersViewModel.cards.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -54,9 +49,9 @@ fun HikersPage() {
         if (selectedImage != null) {
             ImageDisplay(image = selectedImage!!, onDismiss = { selectedImage = null })
         } else {
-            ImageGrid(cards, onImageClick = { imageMinia ->
-                // Trouver l'image détaillée correspondant à l'image miniature cliquée
-                val detailedImage = cards.firstOrNull { it.miniaturaImageResource == imageMinia }?.detailedImageResource
+            // Passez les cartes en tant qu'état
+            ImageGrid(cards = cards.value, onImageClick = { imageMinia ->
+                val detailedImage = cards.value.firstOrNull { it.miniaturaImageResource == imageMinia }?.detailedImageResource
                 detailedImage?.let { selectedImage = it }
             })
         }
