@@ -3,26 +3,29 @@ package com.example.hiker.ui.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.lifecycleScope
-import com.example.hiker.services.LocationService
-import com.example.hiker.ui.components.DisplayLocation
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.hiker.ui.components.HikersPage
+import com.example.hiker.ui.components.MapPage
+import com.example.hiker.ui.components.ProfilePage
+import com.example.hiker.R
 import com.example.hiker.managers.UserLevelManager
-import com.example.hiker.ui.components.Map
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import com.example.hiker.services.LocationService
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var locationService: LocationService
@@ -30,36 +33,51 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         locationService = LocationService(this, lifecycleScope)
         val ctx = applicationContext
         Configuration.getInstance().load(ctx, getSharedPreferences("osmdroid", 0))
 
-
         setContent {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(onClick = { locationService.toggleLocationUpdates() }) {
-                    Text(text = if (locationService.isLocationAvailable()) "Stop Location Updates" else "Start Location Updates")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+            val navController = rememberNavController()
 
-                if (locationService.isLocationAvailable()) {
-                    // DisplayLocation(locationService, userLevelManager)
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        Map(locationService.lat!!, locationService.lon!!)
-                    }
+            Scaffold(
+                bottomBar = { BottomNavigationBar(navController) }
+            ) { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = "profile",
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable("hikers") { HikersPage() }
+                    composable("map") { MapPage(locationService) }
+                    composable("profile") { ProfilePage(locationService, userLevelManager) }
                 }
-                }
-
             }
         }
+    }
+}
+
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    BottomNavigation(backgroundColor = Color.White, contentColor = Color.Black) {
+        BottomNavigationItem(
+            icon = { Icon(painter = painterResource(id = R.drawable.icon_cartes), contentDescription = null) },
+            label = { Text("Hikers") },
+            selected = navController.currentDestination?.route == "hikers",
+            onClick = { navController.navigate("hikers") }
+        )
+        BottomNavigationItem(
+            icon = { Icon(painter = painterResource(id = R.drawable.icon_map), contentDescription = null) },
+            label = { Text("Map") },
+            selected = navController.currentDestination?.route == "map",
+            onClick = { navController.navigate("map") }
+        )
+        BottomNavigationItem(
+            icon = { Icon(painter = painterResource(id = R.drawable.icon_profile), contentDescription = null) },
+            label = { Text("Profile") },
+            selected = navController.currentDestination?.route == "profile",
+            onClick = { navController.navigate("profile") }
+        )
+    }
 }
