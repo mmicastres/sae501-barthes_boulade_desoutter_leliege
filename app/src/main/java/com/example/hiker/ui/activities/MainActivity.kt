@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hiker.managers.UserLevelManager
 import com.example.hiker.services.LocationService
 import com.example.hiker.ui.components.BottomNavigationBar
+import com.example.hiker.ui.components.ConnectionPage
 import com.example.hiker.ui.components.HikersPage
 import com.example.hiker.ui.components.MapPage
 import com.example.hiker.ui.components.ProfilePage
@@ -29,18 +30,27 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Scaffold(
-                bottomBar = { BottomNavigationBar(navController) }
+                bottomBar = {
+                    if (shouldShowBottomBar(navController.currentDestination?.route)) {
+                        BottomNavigationBar(navController)
+                    }
+                }
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "profile",
+                    startDestination = "Connection",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage() }
                     composable("map") { MapPage() }
                     composable("profile") { ProfilePage(locationService, userLevelManager) }
+                    composable("connection") { ConnectionPage() }
                 }
             }
         }
     }
+}
+
+fun shouldShowBottomBar(route: String?): Boolean {
+    return route != "connection"
 }
