@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage() }
-                    composable("map") { MapPage() }
+                    composable("map") { MapPage(locationService) }
                     composable("profile") { ProfilePage(locationService, userLevelManager) }
                     composable("connection") { ConnectionPage(navController) }
                 }
