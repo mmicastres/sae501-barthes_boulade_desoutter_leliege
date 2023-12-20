@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
@@ -28,10 +31,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
+            val currentRoute = remember { mutableStateOf<String?>(null) }
+
+            LaunchedEffect(navController) {
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    currentRoute.value = destination.route
+                }
+            }
 
             Scaffold(
                 bottomBar = {
-                    if (shouldShowBottomBar(navController.currentDestination?.route)) {
+                    if (shouldShowBottomBar(currentRoute.value)) {
                         BottomNavigationBar(navController)
                     }
                 }
@@ -44,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     composable("hikers") { HikersPage() }
                     composable("map") { MapPage() }
                     composable("profile") { ProfilePage(locationService, userLevelManager) }
-                    composable("connection") { ConnectionPage() }
+                    composable("connection") { ConnectionPage(navController) }
                 }
             }
         }
