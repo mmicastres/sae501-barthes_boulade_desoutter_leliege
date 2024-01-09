@@ -18,6 +18,7 @@ import com.example.hiker.services.LocationService
 import com.example.hiker.ui.components.BottomNavigationBar
 import com.example.hiker.ui.components.ConnectionPage
 import com.example.hiker.ui.components.HikersPage
+import com.example.hiker.ui.components.InscriptionPage
 import com.example.hiker.ui.components.MapPage
 import com.example.hiker.ui.components.ProfilePage
 import org.osmdroid.config.Configuration
@@ -51,13 +52,14 @@ class MainActivity : ComponentActivity() {
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "Connection",
+                    startDestination = "connection",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage() }
                     composable("map") { MapPage(locationService) }
-                    composable("profile") { ProfilePage(locationService, userLevelManager) }
+                    composable("profile") { ProfilePage(locationService, userLevelManager, navController) }
                     composable("connection") { ConnectionPage(navController) }
+                    composable("inscription") { InscriptionPage(navController) }
                 }
             }
         }
@@ -65,5 +67,5 @@ class MainActivity : ComponentActivity() {
 }
 
 fun shouldShowBottomBar(route: String?): Boolean {
-    return route != "connection"
+    return !(route == "connection" || route == "inscription")
 }

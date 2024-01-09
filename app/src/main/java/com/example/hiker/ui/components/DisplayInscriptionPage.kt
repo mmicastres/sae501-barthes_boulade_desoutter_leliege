@@ -30,8 +30,9 @@ import com.example.hiker.ui.theme.Beige
 import com.example.hiker.ui.theme.Maron
 
 @Composable
-fun ConnectionPage(navController: NavController) {
-    var username by remember { mutableStateOf("") }
+fun InscriptionPage(navController: NavController) {
+    var pseudo by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val background = painterResource(id = R.drawable.backgroundconnection)
 
@@ -43,14 +44,13 @@ fun ConnectionPage(navController: NavController) {
             contentScale = ContentScale.Crop
         )
         Text(
-            text = "Connexion",
+            text = "Inscription",
             style = TextStyle(
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Normal,
                 fontSize = 32.sp,
                 color = Color.Black
             ),
-            color = Color.Black,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 48.dp)
@@ -65,15 +65,23 @@ fun ConnectionPage(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            StyledTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = "Login"
+            InscriptionTextField(
+                value = pseudo,
+                onValueChange = { pseudo = it },
+                label = "Pseudo"
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            StyledTextField(
+            InscriptionTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = "Email"
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            InscriptionTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = "Mot de passe"
@@ -81,13 +89,13 @@ fun ConnectionPage(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CustomButton(navController)
+            InscriptionButton(navController)
         }
     }
 }
 
 @Composable
-fun StyledTextField(value: String, onValueChange: (String) -> Unit, label: String) {
+fun InscriptionTextField(value: String, onValueChange: (String) -> Unit, label: String) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
@@ -114,32 +122,29 @@ fun StyledTextField(value: String, onValueChange: (String) -> Unit, label: Strin
         }
     )
 }
-@Composable
-fun CustomButton(navController: NavController) {
-    val buttonBackgroundColor = Maron
-    val buttonContentColor = Color.White
-    val outlinedButtonContentColor = Color.Black
 
+@Composable
+fun InscriptionButton(navController: NavController) {
     Button(
-        onClick = { navController.navigate("profile") },
-        colors = ButtonDefaults.buttonColors(backgroundColor = buttonBackgroundColor, contentColor = buttonContentColor),
+        onClick = { /* plus tard */ },
+        colors = ButtonDefaults.buttonColors(backgroundColor = Maron, contentColor = Color.White),
         shape = RoundedCornerShape(50),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Text(text = "Se connecter", style = MaterialTheme.typography.button)
+        Text(text = "S'inscrire", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.White))
     }
     Spacer(modifier = Modifier.height(8.dp))
     OutlinedButton(
-        onClick = { navController.navigate("inscription") },
-        colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent, contentColor = outlinedButtonContentColor),
-        border = BorderStroke(1.dp, buttonBackgroundColor),
+        onClick = { navController.popBackStack() },
+        colors = ButtonDefaults.outlinedButtonColors(backgroundColor = Color.Transparent, contentColor = Maron),
+        border = BorderStroke(1.dp, Maron),
         shape = RoundedCornerShape(50),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Text(text = "Je n'ai pas de compte", style = MaterialTheme.typography.button)
+        Text(text = "J'ai déjà un compte", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black))
     }
 }

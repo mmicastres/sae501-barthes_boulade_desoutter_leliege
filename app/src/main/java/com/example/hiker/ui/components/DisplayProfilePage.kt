@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.hiker.R
 import com.example.hiker.managers.UserLevelManager
 import com.example.hiker.services.LocationService
@@ -35,7 +36,7 @@ import java.util.Locale
 
 
 @Composable
-fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager) {
+fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager, navController: NavController) {
     val backgroundImage: Painter = painterResource(id = R.drawable.backgroud_image)
     val scrollState = rememberScrollState()
 
@@ -68,7 +69,7 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
                 GridStatSection(locationService)
                 Spacer(modifier = Modifier.height(24.dp)) // Espace supplémentaire pour le défilement
                 Parametres()
-                Boutons(locationService)
+                Boutons(locationService, navController)
             }
         }
     }
@@ -218,7 +219,7 @@ fun Parametres() {
     }
 }
 @Composable
-fun Boutons(locationService: LocationService) {
+fun Boutons(locationService: LocationService, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -230,7 +231,7 @@ fun Boutons(locationService: LocationService) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { /* Gérer la déconnexion */ },
+            onClick = {navController.navigate("connection")},
         ) {
             Text(text = "Se déconnecter", color = Color.White)
         }
