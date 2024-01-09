@@ -1,5 +1,7 @@
 package com.example.hiker.ui.components
 
+import HikersViewModel
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -21,11 +24,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.hiker.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import com.example.hiker.ui.theme.Noir
+
+data class Card(val miniaturaImageResource: Int, val detailedImageResource: Int, val isUnlocked: Boolean)
 
 @Composable
-fun HikersPage() {
+fun HikersPage(hikersViewModel: HikersViewModel = viewModel()) {
     var selectedImage by remember { mutableStateOf<Int?>(null) }
+
+    // Observez les données des cartes comme un état
+    val cards = hikersViewModel.cards.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -36,35 +46,34 @@ fun HikersPage() {
                 .align(Alignment.CenterHorizontally)
         )
 
-        if (selectedImage == null) {
-            ImageGrid(onImageClick = { image -> selectedImage = image })
-        } else {
+        if (selectedImage != null) {
             ImageDisplay(image = selectedImage!!, onDismiss = { selectedImage = null })
+        } else {
+            // Passez les cartes en tant qu'état
+            ImageGrid(cards = cards.value, onImageClick = { imageMinia ->
+                val detailedImage = cards.value.firstOrNull { it.miniaturaImageResource == imageMinia }?.detailedImageResource
+                detailedImage?.let { selectedImage = it }
+            })
         }
     }
 }
 
 @Composable
-fun ImageGrid(onImageClick: (Int) -> Unit) {
+fun ImageGrid(cards: List<Card>, onImageClick: (Int) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val images = listOf(
-            R.drawable.louis,
-            R.drawable.alexandre,
-            R.drawable.louna,
-            R.drawable.nino,
-            R.drawable.simpson,
-            R.drawable.merlin
-        )
-        items(images) { image ->
+        items(cards) { card ->
             Image(
-                painter = painterResource(id = image),
+                painter = painterResource(id = card.miniaturaImageResource),
                 contentDescription = null,
-                modifier = Modifier.clickable { onImageClick(image) }
+                modifier = Modifier
+                    .size(150.dp)
+                    .clickable { if (card.isUnlocked) onImageClick(card.miniaturaImageResource) },
+                colorFilter = if (!card.isUnlocked) ColorFilter.tint(Noir) else null // Griser la carte si elle n'est pas débloquée
             )
         }
     }

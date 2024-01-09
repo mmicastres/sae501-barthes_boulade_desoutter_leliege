@@ -4,26 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.hiker.ui.components.HikersPage
-import com.example.hiker.ui.components.MapPage
-import com.example.hiker.ui.components.ProfilePage
-import com.example.hiker.R
 import com.example.hiker.managers.UserLevelManager
 import com.example.hiker.services.LocationService
+import com.example.hiker.ui.components.BottomNavigationBar
+import com.example.hiker.ui.components.ConnectionPage
+import com.example.hiker.ui.components.HikersPage
+import com.example.hiker.ui.components.InscriptionPage
+import com.example.hiker.ui.components.MapPage
+import com.example.hiker.ui.components.ProfilePage
 import org.osmdroid.config.Configuration
 
 
@@ -39,45 +36,38 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
+            val currentRoute = remember { mutableStateOf<String?>(null) }
+
+            LaunchedEffect(navController) {
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    currentRoute.value = destination.route
+                }
+            }
 
             Scaffold(
-                bottomBar = { BottomNavigationBar(navController) }
+                bottomBar = {
+                    if (shouldShowBottomBar(currentRoute.value)) {
+                        BottomNavigationBar(navController)
+                    }
+                }
             ) { innerPadding ->
                 NavHost(
                     navController = navController,
-                    startDestination = "profile",
+                    startDestination = "connection",
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage() }
                     composable("map") { MapPage(locationService) }
-                    composable("profile") { ProfilePage(locationService, userLevelManager) }
+                    composable("profile") { ProfilePage(locationService, userLevelManager, navController) }
+                    composable("connection") { ConnectionPage(navController) }
+                    composable("inscription") { InscriptionPage(navController) }
                 }
             }
         }
     }
 }
 
-
-@Composable
-fun BottomNavigationBar(navController: NavController) {
-    BottomNavigation(backgroundColor = Color.White, contentColor = Color.Black) {
-        BottomNavigationItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_cartes), contentDescription = null) },
-            label = { Text("Hikers") },
-            selected = navController.currentDestination?.route == "hikers",
-            onClick = { navController.navigate("hikers") }
-        )
-        BottomNavigationItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_map), contentDescription = null) },
-            label = { Text("Map") },
-            selected = navController.currentDestination?.route == "map",
-            onClick = { navController.navigate("map") }
-        )
-        BottomNavigationItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.icon_profile), contentDescription = null) },
-            label = { Text("Profile") },
-            selected = navController.currentDestination?.route == "profile",
-            onClick = { navController.navigate("profile") }
-        )
-    }
+fun shouldShowBottomBar(route: String?): Boolean {
+    return !(route == "connection" || route == "inscription")
 }
+
