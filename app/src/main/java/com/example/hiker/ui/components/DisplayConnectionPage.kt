@@ -33,7 +33,7 @@ import com.example.hiker.ui.theme.Maron
 fun ConnectionPage(navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val background = painterResource(id = R.drawable.backgroundconnection)
+    val background = painterResource(id = R.drawable.background)
 
     Box(modifier = Modifier.fillMaxHeight()) {
         Image(
