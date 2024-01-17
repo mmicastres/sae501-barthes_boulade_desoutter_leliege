@@ -34,7 +34,7 @@ fun InscriptionPage(navController: NavController) {
     var pseudo by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val background = painterResource(id = R.drawable.backgroundconnection)
+    val background = painterResource(id = R.drawable.background)
 
     Box(modifier = Modifier.fillMaxHeight()) {
         Image(
