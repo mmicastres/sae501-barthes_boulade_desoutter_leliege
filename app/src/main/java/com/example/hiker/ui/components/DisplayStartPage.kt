@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -47,6 +48,7 @@ fun WelcomePage(navController: NavController) {
                 text = "Bienvenue au cœur du danger dans la contrée des Hikers, seule la loi du plus fort règne. Votre but : avoir le plus de personnage possible, comment faire ?\nMarcher et provoquer des randonneurs en duel.\nÊtes-vous préparé pour cette aventure ?",
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                     fontSize = 18.sp,
                     color = Color.Black
                 ),
