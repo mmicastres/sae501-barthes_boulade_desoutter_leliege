@@ -1,5 +1,6 @@
 package com.example.hiker.ui.components
 
+import HikersViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
@@ -22,6 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -29,10 +33,28 @@ import com.example.hiker.R
 import com.example.hiker.ui.theme.Beige
 import com.example.hiker.ui.theme.Maron
 
+
 @Composable
-fun ConnectionPage(navController: NavController) {
+fun ConnectionPage(navController: NavController, viewModel: HikersViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    // Observer l'état de connexion
+    val loginState = viewModel.loginState.collectAsState().value
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            HikersViewModel.LoginState.Success -> navController.navigate("profile")
+            HikersViewModel.LoginState.Failed -> showErrorDialog = true
+            else -> {}
+        }
+    }
+
+    if (showErrorDialog) {
+        ErrorDialog(onDismiss = { showErrorDialog = false })
+    }
+
     val background = painterResource(id = R.drawable.background)
 
     Box(modifier = Modifier.fillMaxHeight()) {
@@ -76,22 +98,27 @@ fun ConnectionPage(navController: NavController) {
             StyledTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Mot de passe"
+                label = "Mot de passe",
+                isPassword = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CustomButton(navController)
+            CustomButton(navController, onClick = {
+                viewModel.login(username, password)
+            })
         }
     }
 }
 
 @Composable
-fun StyledTextField(value: String, onValueChange: (String) -> Unit, label: String) {
+fun StyledTextField(value: String, onValueChange: (String) -> Unit, label: String, isPassword: Boolean = false) {
+    val visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
+        visualTransformation = visualTransformation,
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
@@ -115,13 +142,13 @@ fun StyledTextField(value: String, onValueChange: (String) -> Unit, label: Strin
     )
 }
 @Composable
-fun CustomButton(navController: NavController) {
+fun CustomButton(navController: NavController, onClick: () -> Unit) {
     val buttonBackgroundColor = Maron
     val buttonContentColor = Color.White
     val outlinedButtonContentColor = Color.Black
 
     Button(
-        onClick = { navController.navigate("profile") },
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(backgroundColor = buttonBackgroundColor, contentColor = buttonContentColor),
         shape = RoundedCornerShape(50),
         modifier = Modifier
@@ -142,4 +169,18 @@ fun CustomButton(navController: NavController) {
     ) {
         Text(text = "Je n'ai pas de compte", style = MaterialTheme.typography.button)
     }
+}
+
+@Composable
+fun ErrorDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Erreur") },
+        text = { Text("Identifiant ou mot de passe incorrect") },
+        confirmButton = {
+            Button(onClick = onDismiss) { // Utilisez la lambda onDismiss pour fermer la popup
+                Text("OK")
+            }
+        }
+    )
 }

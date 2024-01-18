@@ -31,7 +31,7 @@ import com.example.hiker.ui.theme.Noir
 data class Card(val miniaturaImageResource: Int, val detailedImageResource: Int, val isUnlocked: Boolean)
 
 @Composable
-fun HikersPage(hikersViewModel: HikersViewModel = viewModel()) {
+fun HikersPage(hikersViewModel: HikersViewModel) {
     var selectedImage by remember { mutableStateOf<Int?>(null) }
 
     // Observez les données des cartes comme un état

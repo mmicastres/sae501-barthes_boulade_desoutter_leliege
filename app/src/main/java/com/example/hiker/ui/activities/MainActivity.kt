@@ -1,5 +1,6 @@
 package com.example.hiker.ui.activities
 
+import HikersViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -38,6 +40,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val currentRoute = remember { mutableStateOf<String?>(null) }
+            val model : HikersViewModel = viewModel()
 
             LaunchedEffect(navController) {
                 navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -57,10 +60,10 @@ class MainActivity : ComponentActivity() {
                     startDestination = "WelcomePage",
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable("hikers") { HikersPage() }
+                    composable("hikers") { HikersPage(model) }
                     composable("map") { MapPage(locationService) }
                     composable("profile") { ProfilePage(locationService, userLevelManager, navController) }
-                    composable("connection") { ConnectionPage(navController) }
+                    composable("connection") { ConnectionPage(navController, model) }
                     composable("inscription") { InscriptionPage(navController) }
                     composable("WelcomePage") { WelcomePage(navController) }
                 }
@@ -72,4 +75,3 @@ class MainActivity : ComponentActivity() {
 fun shouldShowBottomBar(route: String?): Boolean {
     return !(route == "connection" || route == "inscription" || route == "WelcomePage")
 }
-
