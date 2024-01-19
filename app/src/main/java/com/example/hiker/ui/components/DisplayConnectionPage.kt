@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.example.hiker.R
 import com.example.hiker.ui.theme.Beige
 import com.example.hiker.ui.theme.Maron
+import android.util.Log
 
 
 @Composable
@@ -39,6 +40,7 @@ fun ConnectionPage(navController: NavController, viewModel: HikersViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var isLoggingIn by remember { mutableStateOf(false) }
 
     // Observer l'état de connexion
     val loginState = viewModel.loginState.collectAsState().value
@@ -46,8 +48,12 @@ fun ConnectionPage(navController: NavController, viewModel: HikersViewModel) {
     LaunchedEffect(loginState) {
         when (loginState) {
             HikersViewModel.LoginState.Success -> navController.navigate("profile")
-            HikersViewModel.LoginState.Failed -> showErrorDialog = true
-            else -> {}
+            HikersViewModel.LoginState.Loading -> isLoggingIn = true
+            HikersViewModel.LoginState.Failed -> {
+                isLoggingIn = false
+                showErrorDialog = true
+            }
+            else -> isLoggingIn = false
         }
     }
 
@@ -105,7 +111,11 @@ fun ConnectionPage(navController: NavController, viewModel: HikersViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
 
             CustomButton(navController, onClick = {
-                viewModel.login(username, password)
+                if (username.isNotBlank() && password.isNotBlank()) {
+                    viewModel.login(username, password)
+                } else {
+                    showErrorDialog = true
+                }
             })
         }
     }

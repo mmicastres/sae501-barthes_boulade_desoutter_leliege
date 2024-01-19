@@ -1,5 +1,6 @@
 package com.example.hiker.ui.components
 
+import HikersViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -36,9 +38,10 @@ import java.util.Locale
 
 
 @Composable
-fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager, navController: NavController) {
+fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager, navController: NavController, viewModel: HikersViewModel) {
     val backgroundImage: Painter = painterResource(id = R.drawable.backgroud_image)
     val scrollState = rememberScrollState()
+
 
     Column(
         modifier = Modifier
@@ -69,7 +72,7 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
                 GridStatSection(locationService)
                 Spacer(modifier = Modifier.height(24.dp)) // Espace supplémentaire pour le défilement
                 Parametres()
-                Boutons(locationService, navController)
+                Boutons(locationService, navController, viewModel)
             }
         }
     }
@@ -219,7 +222,7 @@ fun Parametres() {
     }
 }
 @Composable
-fun Boutons(locationService: LocationService, navController: NavController) {
+fun Boutons(locationService: LocationService, navController: NavController, viewModel: HikersViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -231,7 +234,10 @@ fun Boutons(locationService: LocationService, navController: NavController) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = {navController.navigate("connection")},
+            onClick = {
+                viewModel.logout()
+                navController.navigate("connection")
+            }
         ) {
             Text(text = "Se déconnecter", color = Color.White)
         }

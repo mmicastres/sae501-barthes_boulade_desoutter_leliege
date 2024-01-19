@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable("hikers") { HikersPage(model) }
                     composable("map") { MapPage(locationService) }
-                    composable("profile") { ProfilePage(locationService, userLevelManager, navController) }
+                    composable("profile") { ProfilePage(locationService, userLevelManager, navController, model) }
                     composable("connection") { ConnectionPage(navController, model) }
                     composable("inscription") { InscriptionPage(navController) }
                     composable("WelcomePage") { WelcomePage(navController) }
