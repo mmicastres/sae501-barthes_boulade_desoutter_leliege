@@ -96,7 +96,7 @@ fun ConnectionPage(navController: NavController, viewModel: HikersViewModel) {
             StyledTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = "Login"
+                label = "email"
             )
 
             Spacer(modifier = Modifier.height(8.dp))

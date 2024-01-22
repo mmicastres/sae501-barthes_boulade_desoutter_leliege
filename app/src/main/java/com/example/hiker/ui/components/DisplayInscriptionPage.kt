@@ -1,5 +1,6 @@
 package com.example.hiker.ui.components
 
+import HikersViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
@@ -30,11 +32,16 @@ import com.example.hiker.ui.theme.Beige
 import com.example.hiker.ui.theme.Maron
 
 @Composable
-fun InscriptionPage(navController: NavController) {
+fun InscriptionPage(navController: NavController, viewModel: HikersViewModel) {
     var pseudo by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val background = painterResource(id = R.drawable.background)
+    var showInscriptionErrorDialog by remember { mutableStateOf(false) }
+
+    if (showInscriptionErrorDialog) {
+        InscriptionErrorDialog(onDismiss = { showInscriptionErrorDialog = false })
+    }
 
     Box(modifier = Modifier.fillMaxHeight()) {
         Image(
@@ -89,7 +96,13 @@ fun InscriptionPage(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            InscriptionButton(navController)
+            InscriptionButton(navController, onClick = {
+                if (pseudo.isNotBlank() && password.isNotBlank() && email.isNotBlank()) {
+                    viewModel.inscription(pseudo, password, email)
+                } else {
+                    showInscriptionErrorDialog = true
+                }
+            })
         }
     }
 }
@@ -124,9 +137,9 @@ fun InscriptionTextField(value: String, onValueChange: (String) -> Unit, label: 
 }
 
 @Composable
-fun InscriptionButton(navController: NavController) {
+fun InscriptionButton(navController: NavController, onClick: () -> Unit) {
     Button(
-        onClick = { /* plus tard */ },
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(backgroundColor = Maron, contentColor = Color.White),
         shape = RoundedCornerShape(50),
         modifier = Modifier
@@ -147,4 +160,18 @@ fun InscriptionButton(navController: NavController) {
     ) {
         Text(text = "J'ai déjà un compte", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black))
     }
+}
+
+@Composable
+fun InscriptionErrorDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Erreur") },
+        text = { Text("Identifiant ou mot de passe incorrect") },
+        confirmButton = {
+            Button(onClick = onDismiss) { // Utilisez la lambda onDismiss pour fermer la popup
+                Text("OK")
+            }
+        }
+    )
 }

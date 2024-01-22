@@ -11,10 +11,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 // Interface Retrofit pour les appels API
 interface UserApiService {
+
     @POST("connexion")
     suspend fun login(@Body credentials: LoginCredentials): LoginResponse
 
@@ -26,12 +28,31 @@ interface UserApiService {
 
     @GET("collection")
     suspend fun getCollection(@Query("userId") userId: String): Collection
+
+    @GET("utilisateurs/{id_utilisateur}")
+    suspend fun getUserInfo(@Path("id_utilisateur") userId: Int): UserInfoResponse
 }
 
-data class LoginCredentials(val email: String, val mdp: String)
-data class LoginResponse(val success: Boolean, val token: String?)
-data class InscriptionCredentials(val email: String, val password: String, val identifiant: String)
-data class InscriptionResponse(val success: Boolean)
+data class UserInfoResponse(
+    val duelsGagnes: Int,
+    val experience: Int,
+    val totalKmParcourus: Double,
+    val kmParcourusJour: Double,
+    val personnagesObtenus: List<Character>
+)
+data class LoginCredentials(
+    val email: String,
+    val mdp: String)
+data class LoginResponse(
+    val success: Boolean,
+    val token: String?,
+    val id_util: Int?)
+data class InscriptionCredentials(
+    val email: String,
+    val mdp: String,
+    val pseudo: String)
+data class InscriptionResponse(
+    val success: Boolean)
 data class Profil(
     val distanceTotaleParcourue: Double,
     val distanceJournaliereParcourue: Double,
@@ -56,6 +77,9 @@ class HikersViewModel : ViewModel() {
     val loginState: StateFlow<LoginState> = _loginState
     private val _loginToken = MutableStateFlow<String?>(null)
     val loginToken: StateFlow<String?> = _loginToken
+    private val _inscriptionState = MutableStateFlow(InscriptionState.Idle)
+    val inscriptionState: StateFlow<InscriptionState> = _inscriptionState
+
 
     fun logout() {
         _loginState.value = LoginState.Idle
@@ -66,9 +90,17 @@ class HikersViewModel : ViewModel() {
         Idle, Loading, Success, Failed
     }
 
+    enum class InscriptionState {
+        Idle, Loading, Success, Failed
+    }
+
     // État pour gérer les cartes
     private val _cards = MutableStateFlow<List<Card>>(emptyList())
     val cards: StateFlow<List<Card>> = _cards
+
+    // gestion des details utilisateurs
+    private val _userInfo = MutableStateFlow<UserInfoResponse?>(null)
+    val userInfo: StateFlow<UserInfoResponse?> = _userInfo
 
 
     //partie récupération des cartes
@@ -99,6 +131,8 @@ class HikersViewModel : ViewModel() {
             try {
                 val response = service.login(LoginCredentials(email, mdp))
                 if (!response.token.isNullOrEmpty()) {
+                    Log.i("test", "token : ${response.token}")
+                    Log.i("test", "token : ${response.id_util}")
                     _loginToken.value = response.token
                     _loginState.value = LoginState.Success
                 } else {
@@ -110,25 +144,31 @@ class HikersViewModel : ViewModel() {
         }
     }
 
-    fun inscription(email: String, mdp: String, identifiant: String) {
+    fun inscription(pseudo: String, mdp: String, email: String ) {
         viewModelScope.launch {
+            _inscriptionState.value = InscriptionState.Loading
             try {
-                val response = service.inscription(InscriptionCredentials(email, mdp, identifiant))
-                // Gérer la réponse de l'inscription
-            } catch (e: Exception) {
-                // Gérer les exceptions
+                Log.i("Inscription", "email: $email, mdp : $mdp, pseudo : $pseudo")
+                val response = service.inscription(InscriptionCredentials(email, mdp, pseudo))
+                if (response.success) {
+                    login(email, mdp)
+                }
+            } catch (e: Exception) { 
+                _inscriptionState.value = InscriptionState.Failed
+                Log.e("Inscription", "Erreur d'inscription: ${e.message}")
             }
         }
     }
 
-    // Fonction pour obtenir le profil
-    fun getProfil(userId: String) {
+    fun getUserInfo(userId: Int) {
         viewModelScope.launch {
             try {
-                val profil = service.getProfil(userId)
-                // Gérer les données du profil
+                val userInfoResponse = service.getUserInfo(userId)
+                _userInfo.value = userInfoResponse
+                // Vous pouvez maintenant utiliser _userInfo.value pour accéder aux informations de l'utilisateur
             } catch (e: Exception) {
-                // Gérer les exceptions
+                Log.e("ViewModel", "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}")
+                // Gérer l'exception si nécessaire
             }
         }
     }
