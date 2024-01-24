@@ -39,6 +39,7 @@ import java.util.Locale
 
 @Composable
 fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelManager, navController: NavController, viewModel: HikersViewModel) {
+    val userInfo = viewModel.userInfo.collectAsState().value
     val backgroundImage: Painter = painterResource(id = R.drawable.backgroud_image)
     val scrollState = rememberScrollState()
 
@@ -49,7 +50,9 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
             .padding(20.dp, 16.dp, 20.dp, 0.dp)
             .verticalScroll(scrollState)
     ) {
-        DisplayNiveaux(locationService.totalDistance, userLevelManager)
+        userInfo?.let {
+            DisplayNiveaux(it.totalKmParcourus.toFloat(), userLevelManager, viewModel)
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
@@ -69,7 +72,7 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                GridStatSection(locationService)
+                GridStatSection(locationService, viewModel)
                 Spacer(modifier = Modifier.height(24.dp)) // Espace supplémentaire pour le défilement
                 Parametres()
                 Boutons(locationService, navController, viewModel)
@@ -78,7 +81,8 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
     }
 }
 @Composable
-fun GridStatSection(locationService: LocationService) {
+fun GridStatSection(locationService: LocationService, viewModel: HikersViewModel) {
+    val userInfo = viewModel.userInfo.collectAsState().value
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             val formattedLat = "%.2f".format(locationService.lat ?: 0.0)
@@ -91,8 +95,12 @@ fun GridStatSection(locationService: LocationService) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            StatBubble(title = "Duels Gagnés", content = "À venir")
-            StatBubble(title = "Collection", content = "À venir")
+            userInfo?.let {
+                StatBubble(title = "Duels Gagnés", content = "${userInfo.duelsGagnes}")
+            }
+            userInfo?.let {
+                StatBubble(title = "Collection", content = "${userInfo.personnagesObtenus}")
+            }
         }
     }
 }
@@ -132,9 +140,10 @@ fun StatBubble(title: String, content: String) {
 }
 
 @Composable
-fun DisplayNiveaux(totalDistance: Float, userLevelManager: UserLevelManager) {
+fun DisplayNiveaux(totalDistance: Float, userLevelManager: UserLevelManager, viewModel: HikersViewModel) {
     val level = userLevelManager.calculateLevel(totalDistance)
     val grade = userLevelManager.getGrade(level)
+    val userInfo = viewModel.userInfo.collectAsState().value
 
     Column(
         modifier = Modifier.fillMaxWidth(),

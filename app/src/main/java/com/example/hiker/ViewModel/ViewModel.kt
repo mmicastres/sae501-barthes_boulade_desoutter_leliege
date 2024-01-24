@@ -23,14 +23,11 @@ interface UserApiService {
     @POST("inscription")
     suspend fun inscription(@Body credentials: InscriptionCredentials): InscriptionResponse
 
-    @GET("profil")
-    suspend fun getProfil(@Query("userId") userId: String): Profil
-
-    @GET("collection")
-    suspend fun getCollection(@Query("userId") userId: String): Collection
-
     @GET("utilisateurs/{id_utilisateur}")
-    suspend fun getUserInfo(@Path("id_utilisateur") userId: Int): UserInfoResponse
+    suspend fun getUserInfo(
+        @Path("id_utilisateur") userId: String,
+        @Query("token") token: String
+    ): UserInfoResponse
 }
 
 data class UserInfoResponse(
@@ -72,7 +69,6 @@ class HikersViewModel : ViewModel() {
 
     private val service = retrofit.create(UserApiService::class.java)
 
-    // États de connexion
     private val _loginState = MutableStateFlow(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
     private val _loginToken = MutableStateFlow<String?>(null)
@@ -132,9 +128,10 @@ class HikersViewModel : ViewModel() {
                 val response = service.login(LoginCredentials(email, mdp))
                 if (!response.token.isNullOrEmpty()) {
                     Log.i("test", "token : ${response.token}")
-                    Log.i("test", "token : ${response.id_util}")
+                    Log.i("test", "id_util : ${response.id_util}")
                     _loginToken.value = response.token
                     _loginState.value = LoginState.Success
+                    response.id_util?.let { getUserInfo(it, response.token) }
                 } else {
                     _loginState.value = LoginState.Failed
                 }
@@ -160,24 +157,27 @@ class HikersViewModel : ViewModel() {
         }
     }
 
-    fun getUserInfo(userId: Int) {
+    fun getUserInfo(userId: Int, token: String) {
         viewModelScope.launch {
             try {
-                val userInfoResponse = service.getUserInfo(userId)
+                val userInfoResponse = service.getUserInfo(userId.toString(), token)
                 _userInfo.value = userInfoResponse
+                val totalDistanceFromServer = userInfoResponse.totalKmParcourus.toFloat()
+                Log.i("test", "infos : ${_userInfo.value}")
+                Log.i("test", "infos : ${_userInfo.value!!.totalKmParcourus}")
                 // Vous pouvez maintenant utiliser _userInfo.value pour accéder aux informations de l'utilisateur
             } catch (e: Exception) {
-                Log.e("ViewModel", "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}")
+                Log.e("getUserInfo", "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}")
                 // Gérer l'exception si nécessaire
             }
         }
     }
 
     // Fonction pour obtenir la collection
-    fun getCollection(userId: String) {
+    fun getCollection(userId: Int, token: String) {
         viewModelScope.launch {
             try {
-                val collection = service.getCollection(userId)
+                val collection = service.getUserInfo(userId.toString(), token)
                 // Gérer les données de la collection
             } catch (e: Exception) {
                 // Gérer les exceptions
