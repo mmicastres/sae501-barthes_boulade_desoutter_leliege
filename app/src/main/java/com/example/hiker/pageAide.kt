@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
+
 fun ScreenPageAide() {
     Column(
         modifier = Modifier
@@ -56,8 +57,8 @@ fun ScreenPageAide() {
                         " - Les deux joueurs acceptent le duel\n" +
                         " - Les deux joueurs choisissent un élément (feu, eau ou terre)\n" +
                         " - Le combat commence :\n" +
-                        "\t        - Le Feu bat l'Eau\n" +
-                        "\t        - L'Eau bat la Terre\n" +
+                        "        \t- Le Feu bat l'Eau\n" +
+                        "        \t- L'Eau bat la Terre\n" +
                         "        \t- La Terre bat le Feu\n" +
                         "        \t- En cas d'égalité le duel recommence\n" +
                         " - Nous avons un gagnant et il remporte une récompense (un personnage aléatoire)"

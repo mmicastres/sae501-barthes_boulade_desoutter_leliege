@@ -13,3 +13,4 @@ L'objectif est simple plus l'utilisateur va marcher, plus l'utilisateur joué va
 Si l'utilisateur ce rapproche d'un autre joueur il y a un duel (pierre, feuille, ciseaux), si le duel est gagné, l'utilisateur un personnage aléatoire. <br>
 L'utilisateur peut voir sa distance parcourus le jour même, ainsi que depuis le début du jeu. <br>
 L'utilisateur peut collectionner une multitude de personnages. <br>
+
