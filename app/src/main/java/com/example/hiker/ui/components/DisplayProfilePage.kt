@@ -91,7 +91,7 @@ fun GridStatSection(locationService: LocationService, viewModel: HikersViewModel
             userInfo?.let {
                 StatBubble(
                     title = "Distance totale",
-                    content = "$distancetotale"
+                    content = "${distancetotale}  mètres"
                 )
             }
             userInfo?.let {
@@ -107,9 +107,9 @@ fun GridStatSection(locationService: LocationService, viewModel: HikersViewModel
                 StatBubble(title = "Duels Gagnés", content = "${userInfo.duelsGagnes}")
             }
             val personnagesContent = if (userInfo?.personnagesObtenus.isNullOrEmpty()) {
-                "0"
+                "0/6"
             } else {
-                "${userInfo?.personnagesObtenus?.size}"
+                "${userInfo?.personnagesObtenus?.size}/6"
             }
             StatBubble(title = "Collection", content = personnagesContent)
         }
