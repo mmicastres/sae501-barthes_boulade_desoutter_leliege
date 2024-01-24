@@ -38,9 +38,25 @@ fun InscriptionPage(navController: NavController, viewModel: HikersViewModel) {
     var password by remember { mutableStateOf("") }
     val background = painterResource(id = R.drawable.background)
     var showInscriptionErrorDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var isLoggingIn by remember { mutableStateOf(false) }
 
     if (showInscriptionErrorDialog) {
         InscriptionErrorDialog(onDismiss = { showInscriptionErrorDialog = false })
+    }
+
+    val loginState = viewModel.loginState.collectAsState().value
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            HikersViewModel.LoginState.Success -> navController.navigate("profile")
+            HikersViewModel.LoginState.Loading -> isLoggingIn = true
+            HikersViewModel.LoginState.Failed -> {
+                isLoggingIn = false
+                showErrorDialog = true
+            }
+            else -> isLoggingIn = false
+        }
     }
 
     Box(modifier = Modifier.fillMaxHeight()) {
