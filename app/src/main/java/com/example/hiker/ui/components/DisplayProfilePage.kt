@@ -229,7 +229,7 @@ fun Boutons(locationService: LocationService, navController: NavController, view
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /* Gérer l'aide */ }) {
+        Button(onClick = {navController.navigate("Help")}) {
             Text(text = "Aide")
         }
         Spacer(modifier = Modifier.height(8.dp))
