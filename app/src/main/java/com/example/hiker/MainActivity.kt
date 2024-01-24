@@ -1,14 +1,22 @@
 package com.example.hiker
 
+import android.os.Build
 import android.os.Bundle
+import android.Manifest
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -17,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.hiker.ui.theme.HikerTheme
 import com.google.android.gms.location.*
 import kotlinx.coroutines.launch
 import kotlin.math.atan2
@@ -46,28 +55,35 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
+    @OptIn(ExperimentalPermissionsApi::class)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         setContent {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(onClick = { toggleLocationUpdates() }) {
-                    Text(text = if (lon != null && lat != null) "Stop Location Updates" else "Start Location Updates")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                if (lon != null && lat != null) {
-                    DisplayLocation("Current Location")
+            HikerTheme {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(onClick = { toggleLocationUpdates() }) {
+                        Text(text = if (lon != null && lat != null) "Stop Location Updates" else "Start Location Updates")
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (lon != null && lat != null) {
+                        DisplayLocation("Current Location")
+                    }
                 }
             }
         }
     }
+
+
 
     @Composable
     fun DisplayLocation(title: String) {
@@ -78,6 +94,7 @@ class MainActivity : ComponentActivity() {
             Niveaux(totalDistance = totalDistance)
         }
     }
+
 
     @Composable
     fun Niveaux(totalDistance: Float) {
@@ -93,7 +110,8 @@ class MainActivity : ComponentActivity() {
 
     private fun calculateLevel(totalDistance: Float): Int {
         // Changer la logique selon les besoins
-        return (totalDistance / 2000).toInt() + 1
+
+        return (totalDistance / 5000).toInt() + 1
     }
 
     data class ClassKil(
@@ -170,6 +188,7 @@ class MainActivity : ComponentActivity() {
         ) == android.content.pm.PackageManager.PERMISSION_GRANTED
     }
 
+
     private fun requestLocationPermission() {
         ActivityCompat.requestPermissions(
             this,
@@ -197,7 +216,6 @@ class MainActivity : ComponentActivity() {
 
         return (earthRadius * c).toFloat()
     }
-
 
     companion object {
         const val PERMISSION_REQUEST_CODE = 101
