@@ -14,12 +14,11 @@ import kotlinx.coroutines.launch
 
 class LocationService(
     private val context: Context,
-    private val lifecycleScope: LifecycleCoroutineScope,
-    initialTotalDistance: Float
+    private val lifecycleScope: LifecycleCoroutineScope
 ) {
-    var totalDistance: Float = initialTotalDistance
     private var fusedLocationProviderClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
+    var totalDistance: Float = 0f
     var lon by mutableStateOf<Double?>(null)
     var lat by mutableStateOf<Double?>(null)
 

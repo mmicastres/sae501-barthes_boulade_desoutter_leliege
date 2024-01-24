@@ -85,22 +85,33 @@ fun GridStatSection(locationService: LocationService, viewModel: HikersViewModel
     val userInfo = viewModel.userInfo.collectAsState().value
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            val formattedLat = "%.2f".format(locationService.lat ?: 0.0)
-            val formattedLon = "%.2f".format(locationService.lon ?: 0.0)
-            StatBubble(title = "Position Actuelle", content = "$formattedLat | $formattedLon")
-            StatBubble(
-                title = "Distance Totale",
-                content = "${locationService.totalDistance} mètres"
-            )
+
+            val distancetotale = (userInfo?.totalKmParcourus)?.plus(locationService.totalDistance)
+
+            userInfo?.let {
+                StatBubble(
+                    title = "Distance totale",
+                    content = "$distancetotale"
+                )
+            }
+            userInfo?.let {
+                StatBubble(
+                    title = "Distance actuelle",
+                    content = "${locationService.totalDistance} mètres"
+                )
+            }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             userInfo?.let {
                 StatBubble(title = "Duels Gagnés", content = "${userInfo.duelsGagnes}")
             }
-            userInfo?.let {
-                StatBubble(title = "Collection", content = "${userInfo.personnagesObtenus}")
+            val personnagesContent = if (userInfo?.personnagesObtenus.isNullOrEmpty()) {
+                "0"
+            } else {
+                "${userInfo?.personnagesObtenus?.size}"
             }
+            StatBubble(title = "Collection", content = personnagesContent)
         }
     }
 }
