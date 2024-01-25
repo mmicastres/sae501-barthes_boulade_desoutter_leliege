@@ -1,6 +1,6 @@
 # Hiker
 
-1. Introduction<a name="introduction"></a>
+1. Introduction<a name="introduction"></a><br/>
 Cette application a été développée par Barthes Louis, Boulade Louna, Desoutter Alexandre, et Leliege Nino. Elle vise à encourager les utilisateurs à marcher de manière ludique tout en cherchant la motivation pour maintenir une activité physique régulière.
 
 2. Membres de l'équipe<a name="membres-de-lequipe"></a>
