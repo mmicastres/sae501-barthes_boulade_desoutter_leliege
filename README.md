@@ -1,7 +1,7 @@
 # Hiker
 
 **1. Introduction<br/>**
-Cette application a été développée par Barthes Louis, Boulade Louna, Desoutter Alexandre, et Leliege Nino. Elle vise à encourager les utilisateurs à marcher de manière ludique tout en cherchant la motivation pour maintenir une activité physique régulière.
+Cette application a été développée par Louis, Louna, Alexandre, et Nino. Elle vise à encourager les utilisateurs à marcher de manière ludique tout en cherchant la motivation pour maintenir une activité physique régulière.
 
 **2. Membres de l'équipe<br/>**
 - Barthes Louis<br/>
