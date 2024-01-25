@@ -4,10 +4,10 @@
 Cette application a été développée par Barthes Louis, Boulade Louna, Desoutter Alexandre, et Leliege Nino. Elle vise à encourager les utilisateurs à marcher de manière ludique tout en cherchant la motivation pour maintenir une activité physique régulière.
 
 **2. Membres de l'équipe<br/>**
-Barthes Louis<br/>
-Boulade Louna<br/>
-Desoutter Alexandre<br/>
-Leliege Nino<br/>
+- Barthes Louis<br/>
+- Boulade Louna<br/>
+- Desoutter Alexandre<br/>
+- Leliege Nino<br/>
 
 **3. Description<br/>**
 Hiker est une application conçue pour les personnes cherchant à adopter un mode de vie actif de manière ludique. Les utilisateurs peuvent relever des défis, gagner des récompenses et interagir avec d'autres joueurs tout en explorant le monde réel.
