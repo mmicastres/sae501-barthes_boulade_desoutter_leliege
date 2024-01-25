@@ -20,3 +20,8 @@ Bienvenue au cœur du danger dans la contrée des Hikers, où seule la loi du pl
 ***Duel Pierre-Feuille-Ciseaux :*** En se rapprochant d'un autre joueur, les utilisateurs peuvent engager un duel de Pierre-Feuille-Ciseaux des éléments pour remporter des personnages.<br/>
 ***Collection de personnages :*** Les utilisateurs peuvent collectionner une multitude de personnages en participant activement.<br/>
 ***Création de compte :*** Chaque utilisateur crée un compte pour pouvoir sauvegarder leurs progressions
+
+**6. Répartitions des tâches<br/>**
+- ***Sprint 1 :*** Nous avons d'abord défini le projet de notre SAE. Par là suite, nous avons créé une maquette interactive. Toute l'équipe s'est ensuite mise à travailler sur le front en Kotlin. Plus précisément sur la géolocalisation et toute la logique autour des utilisateurs.<br/>
+- ***Sprint 2 :*** Louna, Nino et Alexandre se sont penchés sur le back, tandis que Louis continuait en front.<br/>
+- ***Sprint 3 :*** Toute l'équipe s'est remis à travailler le front pour tout finaliser étant donné que le back soit terminé pendant le sprint précédent. Plus précisément la logique des combats et les derniers détails.<br/>
