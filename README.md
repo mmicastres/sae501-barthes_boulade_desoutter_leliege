@@ -25,3 +25,7 @@ Bienvenue au cœur du danger dans la contrée des Hikers, où seule la loi du pl
 - ***Sprint 1 :*** Nous avons d'abord défini le projet de notre SAE. Par là suite, nous avons créé une maquette interactive. Toute l'équipe s'est ensuite mise à travailler sur le front en Kotlin. Plus précisément sur la géolocalisation et toute la logique autour des utilisateurs.<br/>
 - ***Sprint 2 :*** Louna, Nino se sont penchés sur le back, tandis que Louis continuait en front. Concernant Alexandre, il aidait à la fois pour le back et le front.<br/>
 - ***Sprint 3 :*** Toute l'équipe s'est remis à travailler le front pour tout finaliser étant donné que le back soit terminé pendant le sprint précédent. Plus précisément la logique des combats et les derniers détails.<br/>
+
+**7. Annexes<br/>**
+-lien maquette figma :<br/> 
+https://www.figma.com/file/EEKfvIDfIfI3x9jyQTZqS2/hiker?type=design&node-id=8%3A3&mode=design&t=QlanDqQBb0SKzNtU-1
