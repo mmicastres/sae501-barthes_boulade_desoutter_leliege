@@ -3,7 +3,16 @@ package com.example.hiker.ui.components
 import HikersViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -32,8 +41,8 @@ import androidx.navigation.NavController
 import com.example.hiker.R
 import com.example.hiker.managers.UserLevelManager
 import com.example.hiker.services.LocationService
-import com.example.hiker.ui.theme.Maron
 import com.example.hiker.ui.theme.Jaune
+import com.example.hiker.ui.theme.Maron
 import java.util.Locale
 
 
@@ -43,6 +52,7 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
     val backgroundImage: Painter = painterResource(id = R.drawable.backgroud_image)
     val scrollState = rememberScrollState()
 
+    val distancetotale = ((userInfo?.nbr_km_total)?.times(1000))?.plus(locationService.totalDistance)
 
     Column(
         modifier = Modifier
@@ -51,7 +61,9 @@ fun ProfilePage(locationService: LocationService, userLevelManager: UserLevelMan
             .verticalScroll(scrollState)
     ) {
         userInfo?.let {
-            DisplayNiveaux(it.totalKmParcourus.toFloat(), userLevelManager, viewModel)
+            if (distancetotale != null) {
+                DisplayNiveaux(distancetotale.toFloat(), userLevelManager)
+            }
         }
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -86,30 +98,30 @@ fun GridStatSection(locationService: LocationService, viewModel: HikersViewModel
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
 
-            val distancetotale = (userInfo?.totalKmParcourus)?.plus(locationService.totalDistance)
+            val distancetotale = ((userInfo?.nbr_km_total)?.times(1000))?.plus(locationService.totalDistance)
 
             userInfo?.let {
                 StatBubble(
                     title = "Distance totale",
-                    content = "${distancetotale}  mètres"
+                    content = "${distancetotale?.toInt()}  mètres"
                 )
             }
             userInfo?.let {
                 StatBubble(
                     title = "Distance actuelle",
-                    content = "${locationService.totalDistance} mètres"
+                    content = "${locationService.totalDistance.toInt()} mètres"
                 )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             userInfo?.let {
-                StatBubble(title = "Duels Gagnés", content = "${userInfo.duelsGagnes}")
+                StatBubble(title = "Duels Gagnés", content = "${userInfo.duel_gagne}")
             }
-            val personnagesContent = if (userInfo?.personnagesObtenus.isNullOrEmpty()) {
+            val personnagesContent = if (userInfo?.liste_perso.isNullOrEmpty()) {
                 "0/6"
             } else {
-                "${userInfo?.personnagesObtenus?.size}/6"
+                "${userInfo?.liste_perso?.size}/6"
             }
             StatBubble(title = "Collection", content = personnagesContent)
         }
@@ -151,10 +163,9 @@ fun StatBubble(title: String, content: String) {
 }
 
 @Composable
-fun DisplayNiveaux(totalDistance: Float, userLevelManager: UserLevelManager, viewModel: HikersViewModel) {
+fun DisplayNiveaux(totalDistance: Float, userLevelManager: UserLevelManager) {
     val level = userLevelManager.calculateLevel(totalDistance)
     val grade = userLevelManager.getGrade(level)
-    val userInfo = viewModel.userInfo.collectAsState().value
 
     Column(
         modifier = Modifier.fillMaxWidth(),

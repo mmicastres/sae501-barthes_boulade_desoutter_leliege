@@ -28,15 +28,27 @@ interface UserApiService {
         @Path("id_utilisateur") userId: String,
         @Query("token") token: String
     ): UserInfoResponse
+
+    @GET("utilisateurs/{id_utilisateur}/myperso")
+    suspend fun getCollection(
+        @Path("id_utilisateur") userId: String,
+        @Query("token") token: String
+    ): CollectionResponse
 }
 
 data class UserInfoResponse(
-    val duelsGagnes: Int,
-    val experience: Int,
-    val totalKmParcourus: Double,
-    val kmParcourusJour: Double,
-    val personnagesObtenus: List<Character>
+    val pseudo: String,
+    val duel_gagne: Int,
+    val exp: Int,
+    val nbr_km_total: Double,
+    val nbr_km_today: Double,
+    val liste_perso: List<Int>
 )
+
+data class CollectionResponse(
+    val liste_perso: List<Int>
+)
+
 data class LoginCredentials(
     val email: String,
     val mdp: String)
@@ -50,16 +62,6 @@ data class InscriptionCredentials(
     val pseudo: String)
 data class InscriptionResponse(
     val success: Boolean)
-data class Profil(
-    val distanceTotaleParcourue: Double,
-    val distanceJournaliereParcourue: Double,
-    val niveau: Int,
-    val rank: Int,
-    val pseudo: String,
-    val duelsGagnes: Int
-)
-
-data class Collection(val cartesPossedees: List<Card>)
 
 class HikersViewModel : ViewModel() {
     private val retrofit = Retrofit.Builder()
@@ -81,13 +83,12 @@ class HikersViewModel : ViewModel() {
         _loginState.value = LoginState.Idle
         _loginToken.value = null
     }
-
     enum class LoginState {
         Idle, Loading, Success, Failed
     }
 
     enum class InscriptionState {
-        Idle, Loading, Success, Failed
+        Idle, Loading, Failed
     }
 
     // État pour gérer les cartes
@@ -99,24 +100,27 @@ class HikersViewModel : ViewModel() {
     val userInfo: StateFlow<UserInfoResponse?> = _userInfo
 
 
-    //partie récupération des cartes
-    init {
-        loadCards()
-    }
+    private val allCards = listOf(
+        Card(1, R.drawable.louis_minia, R.drawable.louis, false),
+        Card(1, R.drawable.louna_minia, R.drawable.louna, false),
+        Card(1, R.drawable.alexandre_minia, R.drawable.alexandre, false),
+        Card(1, R.drawable.nino_minia, R.drawable.nino, false),
+        Card(1, R.drawable.simpson_minia, R.drawable.simpson, false),
+        Card(1, R.drawable.merlin_minia, R.drawable.merlin, false),
+    )
 
     // Fonction pour charger les cartes (simulée ici avec des données statiques)
-    private fun loadCards() {
+    private fun loadUserCards(userId: Int, token: String) {
         viewModelScope.launch {
-            // Simuler un chargement de données (ici, données statiques)
-            val loadedCards = listOf(
-                Card(R.drawable.louis_minia, R.drawable.louis, true),
-                Card(R.drawable.louna_minia, R.drawable.louna, false),
-                Card(R.drawable.alexandre_minia, R.drawable.alexandre, false),
-                Card(R.drawable.nino_minia, R.drawable.nino, false),
-                Card(R.drawable.simpson_minia, R.drawable.simpson, false),
-                Card(R.drawable.merlin_minia, R.drawable.merlin, false)
-            )
-            _cards.value = loadedCards
+            try {
+                val userCollection = service.getCollection(userId.toString(), token).liste_perso
+                val updatedCards = allCards.map { card ->
+                    if (card.id in userCollection) card.copy(isUnlocked = true) else card.copy(isUnlocked = false)
+                }
+                _cards.value = updatedCards
+            } catch (e: Exception) {
+                // Gérer les exceptions
+            }
         }
     }
 
@@ -131,7 +135,10 @@ class HikersViewModel : ViewModel() {
                     Log.i("test", "id_util : ${response.id_util}")
                     _loginToken.value = response.token
                     _loginState.value = LoginState.Success
-                    response.id_util?.let { getUserInfo(it, response.token) }
+                    response.id_util?.let {
+                        getUserInfo(it, response.token)
+                        loadUserCards(it, response.token)
+                    }
                 } else {
                     _loginState.value = LoginState.Failed
                 }
@@ -157,30 +164,15 @@ class HikersViewModel : ViewModel() {
         }
     }
 
-    fun getUserInfo(userId: Int, token: String) {
+    private fun getUserInfo(userId: Int, token: String) {
         viewModelScope.launch {
             try {
                 val userInfoResponse = service.getUserInfo(userId.toString(), token)
                 _userInfo.value = userInfoResponse
-                val totalDistanceFromServer = userInfoResponse.totalKmParcourus.toFloat()
                 Log.i("test", "infos : ${_userInfo.value}")
-                Log.i("test", "infos : ${_userInfo.value!!.totalKmParcourus}")
-                // Vous pouvez maintenant utiliser _userInfo.value pour accéder aux informations de l'utilisateur
+                Log.i("test", "infos : ${_userInfo.value!!.nbr_km_total}")
             } catch (e: Exception) {
                 Log.e("getUserInfo", "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}")
-                // Gérer l'exception si nécessaire
-            }
-        }
-    }
-
-    // Fonction pour obtenir la collection
-    fun getCollection(userId: Int, token: String) {
-        viewModelScope.launch {
-            try {
-                val collection = service.getUserInfo(userId.toString(), token)
-                // Gérer les données de la collection
-            } catch (e: Exception) {
-                // Gérer les exceptions
             }
         }
     }

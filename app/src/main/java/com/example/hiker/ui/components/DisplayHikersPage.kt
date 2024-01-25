@@ -28,7 +28,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import com.example.hiker.ui.theme.Noir
 
-data class Card(val miniaturaImageResource: Int, val detailedImageResource: Int, val isUnlocked: Boolean)
+data class Card(
+    val id: Int,
+    val miniaturaImageResource: Int,
+    val detailedImageResource: Int,
+    val isUnlocked: Boolean
+)
 
 @Composable
 fun HikersPage(hikersViewModel: HikersViewModel) {

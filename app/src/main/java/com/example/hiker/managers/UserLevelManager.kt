@@ -14,7 +14,7 @@ class UserLevelManager {
             in 20..24 -> "Maître randonneur"
             in 25..29 -> "Grand maître randonneur"
             in 30..34 -> "Randonneur suprême"
-            else -> "Éminent randonneur de l'ordre des Hikers"
+            else -> "Éminent randonneur"
         }
     }
 }
