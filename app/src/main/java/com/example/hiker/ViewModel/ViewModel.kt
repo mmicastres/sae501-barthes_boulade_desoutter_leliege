@@ -11,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -34,6 +35,13 @@ interface UserApiService {
         @Path("id_utilisateur") userId: String,
         @Query("token") token: String
     ): CollectionResponse
+
+    @PUT("utilisateurs/{id_utilisateur}/kilometre")
+    suspend fun postLocation(
+        @Path("id_utilisateur") userId: String,
+        @Query("token") token: String,
+        @Body credentials: LocationCredentials
+    ): LocationResponse
 }
 
 data class UserInfoResponse(
@@ -44,14 +52,25 @@ data class UserInfoResponse(
     val nbr_km_today: Double,
     val liste_perso: List<Int>
 )
-
 data class CollectionResponse(
     val liste_perso: List<Int>
 )
-
+data class LocationResponse(
+    val success: Boolean
+)
 data class LoginCredentials(
     val email: String,
-    val mdp: String)
+    val mdp: String
+)
+data class LocationCredentials(
+    val nbr_km_total: Int,
+    val nbr_km_today: Int,
+    val localisation: Localisation
+)
+data class Localisation(
+    val x: Float,
+    val y: Float
+)
 data class LoginResponse(
     val success: Boolean,
     val token: String?,
@@ -75,6 +94,8 @@ class HikersViewModel : ViewModel() {
     val loginState: StateFlow<LoginState> = _loginState
     private val _loginToken = MutableStateFlow<String?>(null)
     val loginToken: StateFlow<String?> = _loginToken
+    private val _userId = MutableStateFlow<Int?>(null)
+    val userId: StateFlow<Int?> = _userId
     private val _inscriptionState = MutableStateFlow(InscriptionState.Idle)
     val inscriptionState: StateFlow<InscriptionState> = _inscriptionState
 
@@ -86,7 +107,6 @@ class HikersViewModel : ViewModel() {
     enum class LoginState {
         Idle, Loading, Success, Failed
     }
-
     enum class InscriptionState {
         Idle, Loading, Failed
     }
@@ -135,6 +155,8 @@ class HikersViewModel : ViewModel() {
                     Log.i("test", "id_util : ${response.id_util}")
                     _loginToken.value = response.token
                     _loginState.value = LoginState.Success
+                    _loginToken.value = response.token
+                    _userId.value = response.id_util
                     response.id_util?.let {
                         getUserInfo(it, response.token)
                         loadUserCards(it, response.token)
@@ -173,6 +195,33 @@ class HikersViewModel : ViewModel() {
                 Log.i("test", "infos : ${_userInfo.value!!.nbr_km_total}")
             } catch (e: Exception) {
                 Log.e("getUserInfo", "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}")
+            }
+        }
+    }
+
+    fun postLocation(latitude: Float, longitude: Float, nbrKmTotal: Float, nbrKmToday: Float) {
+        viewModelScope.launch {
+            _userId.value?.let { userId ->
+                _loginToken.value?.let { token ->
+                    Log.i("postlocation", "id : ${userId} token : ${token}")
+                    Log.i("postlocation", "total km : ${nbrKmTotal} today km : ${nbrKmToday}")
+                    Log.i("postlocation", "x et y : ${Localisation(x = latitude, y = longitude)}")
+                    try {
+                        val locationCredentials = LocationCredentials(
+                            nbr_km_total = nbrKmTotal.toInt(),
+                            nbr_km_today = nbrKmToday.toInt(),
+                            localisation = Localisation(x = latitude, y = longitude)
+                        )
+                        val response = service.postLocation(userId.toString(), token, locationCredentials)
+                        if (response.success) {
+                            Log.i("postLocation", "Mise à jour de la localisation réussie")
+                        } else {
+                            Log.e("postLocation", "Échec de la mise à jour de la localisation")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("postLocation", "Erreur lors de la mise à jour de la localisation: ${e.message}")
+                    }
+                }
             }
         }
     }

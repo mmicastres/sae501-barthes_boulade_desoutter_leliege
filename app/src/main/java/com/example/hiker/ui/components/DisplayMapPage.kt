@@ -1,5 +1,7 @@
 package com.example.hiker.ui.components
 
+import HikersViewModel
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +19,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 
 @Composable
-fun MapPage(locationService: LocationService) {
+fun MapPage(locationService: LocationService, viewModel: HikersViewModel) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -82,6 +84,12 @@ fun MapPage(locationService: LocationService) {
                     // Faire défiler (scroll) vers la nouvelle position
                     mapView.controller.animateTo(newCenter)
                     currentCenter = newCenter
+                    viewModel.postLocation(
+                        latitude = locationService.lat!!.toFloat(),
+                        longitude = locationService.lon!!.toFloat(),
+                        nbrKmTotal = 0f, // Remplacer par la valeur appropriée
+                        nbrKmToday = 0f // Remplacer par la valeur appropriée
+                    )
                 }
             },
             modifier = Modifier.fillMaxSize()

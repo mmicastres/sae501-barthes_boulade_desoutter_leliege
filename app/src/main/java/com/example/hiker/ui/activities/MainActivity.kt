@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable("hikers") { HikersPage(model) }
-                    composable("map") { MapPage(locationService) }
+                    composable("map") { MapPage(locationService, model) }
                     composable("profile") { ProfilePage(locationService, userLevelManager, navController, model) }
                     composable("connection") { ConnectionPage(navController, model) }
                     composable("inscription") { InscriptionPage(navController, model) }
