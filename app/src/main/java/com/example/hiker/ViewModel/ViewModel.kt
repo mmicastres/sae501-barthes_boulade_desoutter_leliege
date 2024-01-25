@@ -8,79 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
-import retrofit2.http.Query
-
-// Interface Retrofit pour les appels API
-interface UserApiService {
-
-    @POST("connexion")
-    suspend fun login(@Body credentials: LoginCredentials): LoginResponse
-
-    @POST("inscription")
-    suspend fun inscription(@Body credentials: InscriptionCredentials): InscriptionResponse
-
-    @GET("utilisateurs/{id_utilisateur}")
-    suspend fun getUserInfo(
-        @Path("id_utilisateur") userId: String,
-        @Query("token") token: String
-    ): UserInfoResponse
-
-    @GET("utilisateurs/{id_utilisateur}/myperso")
-    suspend fun getCollection(
-        @Path("id_utilisateur") userId: String,
-        @Query("token") token: String
-    ): CollectionResponse
-
-    @PUT("utilisateurs/{id_utilisateur}/kilometre")
-    suspend fun postLocation(
-        @Path("id_utilisateur") userId: String,
-        @Query("token") token: String,
-        @Body credentials: LocationCredentials
-    ): LocationResponse
-}
-
-data class UserInfoResponse(
-    val pseudo: String,
-    val duel_gagne: Int,
-    val exp: Int,
-    val nbr_km_total: Double,
-    val nbr_km_today: Double,
-    val liste_perso: List<Int>
-)
-data class CollectionResponse(
-    val liste_perso: List<Int>
-)
-data class LocationResponse(
-    val success: Boolean
-)
-data class LoginCredentials(
-    val email: String,
-    val mdp: String
-)
-data class LocationCredentials(
-    val nbr_km_total: Int,
-    val nbr_km_today: Int,
-    val localisation: Localisation
-)
-data class Localisation(
-    val x: Float,
-    val y: Float
-)
-data class LoginResponse(
-    val success: Boolean,
-    val token: String?,
-    val id_util: Int?)
-data class InscriptionCredentials(
-    val email: String,
-    val mdp: String,
-    val pseudo: String)
-data class InscriptionResponse(
-    val success: Boolean)
 
 class HikersViewModel : ViewModel() {
     private val retrofit = Retrofit.Builder()
@@ -98,15 +25,22 @@ class HikersViewModel : ViewModel() {
     val userId: StateFlow<Int?> = _userId
     private val _inscriptionState = MutableStateFlow(InscriptionState.Idle)
     val inscriptionState: StateFlow<InscriptionState> = _inscriptionState
+    private val _totalDistance = MutableStateFlow<Float?>(null)
+    val totalDistance: StateFlow<Float?> = _totalDistance
 
+    fun setTotalDistance(distance: Float) {
+        _totalDistance.value = distance
+    }
 
     fun logout() {
         _loginState.value = LoginState.Idle
         _loginToken.value = null
     }
+
     enum class LoginState {
         Idle, Loading, Success, Failed
     }
+
     enum class InscriptionState {
         Idle, Loading, Failed
     }
@@ -135,7 +69,9 @@ class HikersViewModel : ViewModel() {
             try {
                 val userCollection = service.getCollection(userId.toString(), token).liste_perso
                 val updatedCards = allCards.map { card ->
-                    if (card.id in userCollection) card.copy(isUnlocked = true) else card.copy(isUnlocked = false)
+                    if (card.id in userCollection) card.copy(isUnlocked = true) else card.copy(
+                        isUnlocked = false
+                    )
                 }
                 _cards.value = updatedCards
             } catch (e: Exception) {
@@ -170,7 +106,7 @@ class HikersViewModel : ViewModel() {
         }
     }
 
-    fun inscription(pseudo: String, mdp: String, email: String ) {
+    fun inscription(pseudo: String, mdp: String, email: String) {
         viewModelScope.launch {
             _inscriptionState.value = InscriptionState.Loading
             try {
@@ -179,7 +115,7 @@ class HikersViewModel : ViewModel() {
                 if (response.success) {
                     login(email, mdp)
                 }
-            } catch (e: Exception) { 
+            } catch (e: Exception) {
                 _inscriptionState.value = InscriptionState.Failed
                 Log.e("Inscription", "Erreur d'inscription: ${e.message}")
             }
@@ -194,32 +130,44 @@ class HikersViewModel : ViewModel() {
                 Log.i("test", "infos : ${_userInfo.value}")
                 Log.i("test", "infos : ${_userInfo.value!!.nbr_km_total}")
             } catch (e: Exception) {
-                Log.e("getUserInfo", "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}")
+                Log.e(
+                    "getUserInfo",
+                    "Erreur lors de la récupération des informations de l'utilisateur: ${e.message}"
+                )
             }
         }
     }
 
-    fun postLocation(latitude: Float, longitude: Float, nbrKmTotal: Float, nbrKmToday: Float) {
+    fun postLocation(latitude: Float, longitude: Float, nbrKmToday: Float) {
         viewModelScope.launch {
             _userId.value?.let { userId ->
                 _loginToken.value?.let { token ->
-                    Log.i("postlocation", "id : ${userId} token : ${token}")
-                    Log.i("postlocation", "total km : ${nbrKmTotal} today km : ${nbrKmToday}")
-                    Log.i("postlocation", "x et y : ${Localisation(x = latitude, y = longitude)}")
-                    try {
-                        val locationCredentials = LocationCredentials(
-                            nbr_km_total = nbrKmTotal.toInt(),
-                            nbr_km_today = nbrKmToday.toInt(),
-                            localisation = Localisation(x = latitude, y = longitude)
+                    _totalDistance.value?.let { nbrKmTotal ->
+                        Log.i("postlocation", "id : ${userId} token : ${token}")
+                        Log.i("postlocation", "total km : ${nbrKmTotal} today km : ${nbrKmToday}")
+                        Log.i(
+                            "postlocation",
+                            "x et y : ${Localisation(x = latitude, y = longitude)}"
                         )
-                        val response = service.postLocation(userId.toString(), token, locationCredentials)
-                        if (response.success) {
-                            Log.i("postLocation", "Mise à jour de la localisation réussie")
-                        } else {
-                            Log.e("postLocation", "Échec de la mise à jour de la localisation")
+                        try {
+                            val locationCredentials = LocationCredentials(
+                                nbr_km_total = nbrKmTotal.toInt(),
+                                nbr_km_today = nbrKmToday.toInt(),
+                                localisation = Localisation(x = latitude, y = longitude)
+                            )
+                            val response =
+                                service.postLocation(userId.toString(), token, locationCredentials)
+                            if (response.success) {
+                                Log.i("postLocation", "Mise à jour de la localisation réussie")
+                            } else {
+                                Log.e("postLocation", "Échec de la mise à jour de la localisation")
+                            }
+                        } catch (e: Exception) {
+                            Log.e(
+                                "postLocation",
+                                "Erreur lors de la mise à jour de la localisation: ${e.message}"
+                            )
                         }
-                    } catch (e: Exception) {
-                        Log.e("postLocation", "Erreur lors de la mise à jour de la localisation: ${e.message}")
                     }
                 }
             }

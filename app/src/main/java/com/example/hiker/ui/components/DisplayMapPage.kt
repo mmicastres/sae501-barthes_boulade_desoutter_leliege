@@ -87,7 +87,6 @@ fun MapPage(locationService: LocationService, viewModel: HikersViewModel) {
                     viewModel.postLocation(
                         latitude = locationService.lat!!.toFloat(),
                         longitude = locationService.lon!!.toFloat(),
-                        nbrKmTotal = 0f, // Remplacer par la valeur appropriée
                         nbrKmToday = 0f // Remplacer par la valeur appropriée
                     )
                 }
