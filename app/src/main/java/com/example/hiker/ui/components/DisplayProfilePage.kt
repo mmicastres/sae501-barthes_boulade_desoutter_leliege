@@ -1,6 +1,7 @@
     package com.example.hiker.ui.components
     
     import HikersViewModel
+    import YourMainScreen
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.background
     import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@
     import androidx.compose.foundation.shape.CircleShape
     import androidx.compose.foundation.verticalScroll
     import androidx.compose.material3.Button
+    import androidx.compose.material3.ButtonDefaults
     import androidx.compose.material3.Divider
     import androidx.compose.material3.Switch
     import androidx.compose.material3.SwitchDefaults
@@ -53,6 +55,7 @@
         val scrollState = rememberScrollState()
     
         val distancetotale = ((userInfo?.nbr_km_total)?.times(1000))?.plus(locationService.totalDistance)
+        YourMainScreen()
     
         Column(
             modifier = Modifier
@@ -264,15 +267,18 @@
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { /* Gérer l'aide */ }) {
-                Text(text = "Aide")
+            Button(onClick = { /* Gérer l'aide */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Jaune)
+            ) {
+                Text(text = "Aide", color = Color.Black)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
                     viewModel.logout()
                     navController.navigate("connection")
-                }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Maron)
             ) {
                 Text(text = "Se déconnecter", color = Color.White)
             }
@@ -287,7 +293,8 @@
     fun UniversalButton(onClickAction: () -> Unit, buttonText: String, modifier: Modifier = Modifier) {
         Button(
             onClick = onClickAction,
-            modifier = modifier
+            modifier = modifier,
+            colors = ButtonDefaults.buttonColors(containerColor = Maron)
         ) {
             Text(text = buttonText)
         }

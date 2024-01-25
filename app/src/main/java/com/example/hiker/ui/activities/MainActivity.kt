@@ -24,6 +24,7 @@ import com.example.hiker.ui.components.InscriptionPage
 import com.example.hiker.ui.components.MapPage
 import com.example.hiker.ui.components.ProfilePage
 import com.example.hiker.ui.components.WelcomePage
+import com.yourapp.ui.DisplayCombatPage
 import org.osmdroid.config.Configuration
 
 
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     composable("connection") { ConnectionPage(navController, model) }
                     composable("inscription") { InscriptionPage(navController, model) }
                     composable("WelcomePage") { WelcomePage(navController) }
+                    composable("Combat") { DisplayCombatPage() }
                 }
             }
         }
