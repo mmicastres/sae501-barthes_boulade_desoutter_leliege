@@ -27,5 +27,5 @@ Bienvenue au cœur du danger dans la contrée des Hikers, où seule la loi du pl
 - ***Sprint 3 :*** Toute l'équipe s'est remis à travailler le front pour tout finaliser étant donné que le back soit terminé pendant le sprint précédent. Plus précisément la logique des combats et les derniers détails.<br/>
 
 **7. Annexes<br/>**
--lien maquette figma :<br/> 
+- lien maquette figma :<br/> 
 https://www.figma.com/file/EEKfvIDfIfI3x9jyQTZqS2/hiker?type=design&node-id=8%3A3&mode=design&t=QlanDqQBb0SKzNtU-1
