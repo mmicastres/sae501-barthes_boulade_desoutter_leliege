@@ -19,3 +19,4 @@ Bienvenue au cœur du danger dans la contrée des Hikers, où seule la loi du pl
 ***Suivi de la distance parcourue :*** Les utilisateurs peuvent voir la distance parcourue le jour même et depuis le début du jeu.<br/>
 ***Duel Pierre-Feuille-Ciseaux :*** En se rapprochant d'un autre joueur, les utilisateurs peuvent engager un duel de Pierre-Feuille-Ciseaux des éléments pour remporter des personnages.<br/>
 ***Collection de personnages :*** Les utilisateurs peuvent collectionner une multitude de personnages en participant activement.<br/>
+***Création de compte :*** Chaque utilisateur crée un compte pour pouvoir sauvegarder leurs progressions
