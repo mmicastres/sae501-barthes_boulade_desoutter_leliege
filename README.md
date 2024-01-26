@@ -24,7 +24,7 @@ Bienvenue au cœur du danger dans la contrée des Hikers, où seule la loi du pl
 **6. Répartitions des tâches<br/>**
 - ***Sprint 1 :*** Nous avons d'abord défini le projet de notre SAE. Par là suite, nous avons créé une maquette interactive. Toute l'équipe s'est ensuite mise à travailler sur le front en Kotlin. Plus précisément sur la géolocalisation et toute la logique autour des utilisateurs.<br/>
 - ***Sprint 2 :*** Louna, Nino se sont penchés sur le back, tandis que Louis continuait en front. Concernant Alexandre, il aidait à la fois pour le back et le front.<br/>
-- ***Sprint 3 :*** Toute l'équipe s'est remis à travailler le front pour tout finaliser étant donné que le back soit terminé pendant le sprint précédent. Plus précisément la logique des combats et les derniers détails.<br/>
+- ***Sprint 3 :*** Pour ce dernier sprint, nous nous sommes penchés sur le système de combat que ce soit pour le front et le back.<br/>
 
 **7. Annexes<br/>**
 - lien maquette figma :<br/> 
