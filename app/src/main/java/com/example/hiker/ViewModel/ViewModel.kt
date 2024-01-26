@@ -48,6 +48,9 @@ class HikersViewModel : ViewModel() {
     private val _duelResult = MutableStateFlow<DuelResponse?>(null)
     val duelResult: StateFlow<DuelResponse?> = _duelResult
 
+    private val _secondPlayer = MutableStateFlow<Boolean?>(null)
+    val secondPlayer: StateFlow<Boolean?> = _secondPlayer
+
 
     fun setTotalDistance(distance: Float) {
         _totalDistance.value = distance
@@ -194,13 +197,13 @@ class HikersViewModel : ViewModel() {
                 delay(5000)
 
                 _userId.value?.let { userId ->
-                    detecterUtilisateursProximite(userId)
+                    detecterUtilisateursProximite()
                 }
             }
         }
     }
 
-    fun detecterUtilisateursProximite(userId: Int) {
+    fun detecterUtilisateursProximite() {
         viewModelScope.launch {
             try {
                 _userId.value?.let { userId ->
@@ -213,6 +216,7 @@ class HikersViewModel : ViewModel() {
                             Log.i("True", "want duel = ${response.body()!!.utilisateursProximite.first().want_duel}")
                         } else {
                             _wantDuel.value = response.body()!!.utilisateursProximite.first().want_duel
+                            _secondPlayer.value = response.body()!!.utilisateursProximite[1].want_duel
                         }
                     } else {
                         Log.e("API Error", "Erreur: ${response.errorBody()?.string()}")
