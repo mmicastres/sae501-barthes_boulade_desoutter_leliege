@@ -1,3 +1,4 @@
+import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -36,8 +37,35 @@ interface UserApiService {
     suspend fun detecterUtilisateursProximite(
         @Path("idutil") idUtilisateur: Int
     ): Response<UtilisateursProximiteResponse>
+
+    @PUT("utilisateurs/{idutil}/duel")
+    suspend fun modifierStatutDuel(
+        @Path("idutil") idUtilisateur: Int,
+        @Query("token") token: String,
+        @Body wantDuelRequest: WantDuelRequest
+    ): Response<GenericResponse>
+
+    @GET("duels/{idDuel}/reponse")
+    suspend fun verifierDuel(
+        @Path("idDuel") idDuel: Int,
+        @Query("token") token: String
+    ): Response<DuelResponse>
 }
 
+
+data class DuelResponse(
+    val duel: Boolean,
+    val message: String
+)
+
+data class GenericResponse(
+    val success: Boolean,
+    val message: String
+)
+
+data class WantDuelRequest(
+    val want_duel: Boolean
+)
 
 data class UtilisateursProximiteResponse(
     val utilisateursProximite: List<UtilisateurProximite>

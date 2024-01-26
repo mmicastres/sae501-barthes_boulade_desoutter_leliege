@@ -55,7 +55,7 @@
         val scrollState = rememberScrollState()
     
         val distancetotale = ((userInfo?.nbr_km_total)?.times(1000))?.plus(locationService.totalDistance)
-        YourMainScreen()
+        YourMainScreen(viewModel, navController)
     
         Column(
             modifier = Modifier

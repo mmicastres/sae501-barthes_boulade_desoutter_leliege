@@ -5,12 +5,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.example.hiker.ui.theme.Jaune
+import androidx.navigation.NavController
 import com.example.hiker.ui.theme.Maron
+import kotlinx.coroutines.delay
 
 @Composable
 fun DuelRequestPopup(
@@ -19,7 +21,7 @@ fun DuelRequestPopup(
     onChallengeDeclined: () -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    if (showDialog) {
+    if (!showDialog) {
         AlertDialog(
             onDismissRequest = onDismissRequest,
             title = {
@@ -49,25 +51,46 @@ fun DuelRequestPopup(
 }
 
 @Composable
-fun YourMainScreen() {
+fun YourMainScreen(viewModel: HikersViewModel, navController: NavController) {
+    val wantDuel by viewModel.wantDuel.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var timerActive by remember { mutableStateOf(false) }
+    val duelResult by viewModel.duelResult.collectAsState()
 
     LaunchedEffect(key1 = "anyKey") {
-        showDialog = true
+        showDialog = wantDuel ?: false
     }
 
     DuelRequestPopup(
         showDialog = showDialog,
         onChallengeAccepted = {
-            showDialog = false
+            viewModel.modifierStatutDuel(true)
+            showDialog = true
+            timerActive = true
         },
         onChallengeDeclined = {
-            showDialog = false
+            showDialog = true
         },
         onDismissRequest = {
-            showDialog = false
+            showDialog = true
         }
     )
 
-    // ... Rest of your main screen UI
+    // Gérer le timer
+    LaunchedEffect(key1 = timerActive) {
+        if (timerActive) {
+            delay(10000)
+            viewModel.verifierDuel()
+            timerActive = false
+        }
+    }
+
+    // Réagir aux changements de duelResult
+    LaunchedEffect(duelResult) {
+        duelResult?.let {
+            if (it.duel) {
+                navController.navigate("combat") // Naviguer vers la page de combat
+            }
+        }
+    }
 }
