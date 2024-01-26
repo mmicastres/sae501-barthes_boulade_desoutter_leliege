@@ -1,3 +1,4 @@
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -13,14 +14,40 @@ interface UserApiService {
     suspend fun inscription(@Body credentials: InscriptionCredentials): InscriptionResponse
 
     @GET("utilisateurs/{id_utilisateur}")
-    suspend fun getUserInfo(@Path("id_utilisateur") userId: String, @Query("token") token: String): UserInfoResponse
+    suspend fun getUserInfo(
+        @Path("id_utilisateur") userId: String,
+        @Query("token") token: String
+    ): UserInfoResponse
 
     @GET("utilisateurs/{id_utilisateur}/myperso")
-    suspend fun getCollection(@Path("id_utilisateur") userId: String, @Query("token") token: String): CollectionResponse
+    suspend fun getCollection(
+        @Path("id_utilisateur") userId: String,
+        @Query("token") token: String
+    ): CollectionResponse
 
     @PUT("utilisateurs/{id_utilisateur}/kilometres")
-    suspend fun postLocation(@Path("id_utilisateur") userId: String, @Query("token") token: String, @Body credentials: LocationCredentials): LocationResponse
+    suspend fun postLocation(
+        @Path("id_utilisateur") userId: String,
+        @Query("token") token: String,
+        @Body credentials: LocationCredentials
+    ): LocationResponse
+
+    @GET("utilisateurs/{idutil}/proximite")
+    suspend fun detecterUtilisateursProximite(
+        @Path("idutil") idUtilisateur: Int
+    ): Response<UtilisateursProximiteResponse>
 }
+
+
+data class UtilisateursProximiteResponse(
+    val utilisateursProximite: List<UtilisateurProximite>
+)
+data class UtilisateurProximite(
+    val id_util: Int,
+    val pseudo: String,
+    val distance: Double,
+    val want_duel: Boolean
+)
 
 data class UserInfoResponse(
     val pseudo: String,
@@ -70,4 +97,4 @@ data class InscriptionCredentials(
 data class InscriptionResponse(
     val success: Boolean
 )
-// Placez ici les classes de données associées, telles que LoginCredentials, LoginResponse, etc.
+

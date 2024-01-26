@@ -3,6 +3,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hiker.R
 import com.example.hiker.ui.components.Card
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,14 +20,22 @@ class HikersViewModel : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
+
     private val _loginToken = MutableStateFlow<String?>(null)
     val loginToken: StateFlow<String?> = _loginToken
+
     private val _userId = MutableStateFlow<Int?>(null)
     val userId: StateFlow<Int?> = _userId
+
     private val _inscriptionState = MutableStateFlow(InscriptionState.Idle)
     val inscriptionState: StateFlow<InscriptionState> = _inscriptionState
+
     private val _totalDistance = MutableStateFlow<Float?>(null)
     val totalDistance: StateFlow<Float?> = _totalDistance
+
+    private val _utilisateursProximite = MutableStateFlow<List<UtilisateurProximite>>(emptyList())
+    val utilisateursProximite: StateFlow<List<UtilisateurProximite>> = _utilisateursProximite
+
 
     fun setTotalDistance(distance: Float) {
         _totalDistance.value = distance
@@ -96,6 +105,7 @@ class HikersViewModel : ViewModel() {
                     response.id_util?.let {
                         getUserInfo(it, response.token)
                         loadUserCards(it, response.token)
+                        detecterUtilisateursProximitePeriodiquement()
                     }
                 } else {
                     _loginState.value = LoginState.Failed
@@ -170,6 +180,36 @@ class HikersViewModel : ViewModel() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun detecterUtilisateursProximitePeriodiquement() {
+        viewModelScope.launch {
+            while (true) { // Boucle infinie
+                delay(5000) // Attendre 5 secondes
+
+                _userId.value?.let { userId ->
+                    detecterUtilisateursProximite(userId)
+                }
+            }
+        }
+    }
+
+    fun detecterUtilisateursProximite(userId: Int) {
+        viewModelScope.launch {
+            try {
+                _userId.value?.let { userId ->
+                    val response = service.detecterUtilisateursProximite(userId)
+                    if (response.isSuccessful && response.body() != null) {
+                        _utilisateursProximite.value = response.body()!!.utilisateursProximite
+                        Log.i("detetion", "Succes réponse : ${_utilisateursProximite.value}")
+                    } else {
+                        Log.e("API Error", "Erreur: ${response.errorBody()?.string()}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("API Error", "Erreur lors de la détection des utilisateurs à proximité: ${e.message}")
             }
         }
     }
